@@ -1,0 +1,412 @@
+%%
+%% This is file `fancythm.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% fancythm.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from fancythm.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file fancythm.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% File: fancytm.dtx
+\ProvidesExplPackage{fancythm}{2022/01/30}{0.0.2}{Grouped theorems.}
+\RequirePackage{l3keys2e}
+\RequirePackage[default styles]{thmstyle}
+\cs_set_eq:NN \arabic:n \arabic
+\cs_set_eq:NN \counter_new:n \newcounter
+\cs_set_eq:NN \counter_within:nn \counterwithin
+\cs_new:Npn \counter_new:nn #1 #2
+  {
+    \counter_new:n { #1 }
+    \counter_within:nn { #1 } { #2 }
+  }
+\cs_new:Npn \counter_if_exist_p:n #1
+  {
+    \cs_if_exist_p:c { c@ #1 }
+  }
+\cs_new:Npn \counter_if_exist:nT #1
+  {
+    \cs_if_exist:cT { c@ #1 }
+  }
+\cs_new:Npn \counter_if_exist:nF #1
+  {
+    \cs_if_exist:cF { c@ #1 }
+  }
+\cs_new:Npn \counter_if_exist:nTF #1
+  {
+    \cs_if_exist:cTF { c@ #1 }
+  }
+\cs_set_eq:Nc \counter_undefined_error:n { @nocounterr }
+\cs_new:Npn \counter_ensure_exist:n #1
+  {
+    \counter_if_exist:nF { #1 }
+      {
+        \counter_undefined_error:n { #1 }
+      }
+  }
+\cs_new:Npn \counter_the:n #1
+  {
+    \use:c { the #1 }
+  }
+\cs_new:Npn \counter_set_the:nn #1 #2
+  {
+    \counter_ensure_exist:n { #1 }
+    \exp_args:Nc \renewcommand { the #1 } { #2 }
+  }
+\cs_new:Npn \counter_sub:nn #1 #2
+  {
+    \counter_within:nn { #1 } { #2 }
+    \counter_set_the:nn { #1 }
+    {
+      \counter_the:n { #2 } . \arabic:n { #1 }
+    }
+  }
+\cs_new:Npn \counter_new_sub:nn #1 #2
+  {
+    \counter_new:n { #1 }
+    \counter_sub:nn { #1 } { #2 }
+  }
+
+\cs_new:Npn \__fancythm_counter_sub_if_exist:n #1
+  {
+    \counter_if_exist:nT { #1 }
+      {
+        \counter_new_sub:nn { in #1 } { #1 }
+      }
+  }
+\cs_new:Npn \counter_alias:nn #1 % trailing #2
+  {
+    \cs_undefine:c { c@ #1 }
+    \use:c { @counteralias } { #1 } % implicit #2
+  }
+\cs_generate_variant:Nn \counter_alias:nn { n x }
+\counter_new:n { indocument }
+\__fancythm_counter_sub_if_exist:n { section }
+\__fancythm_counter_sub_if_exist:n { subsection }
+\__fancythm_counter_sub_if_exist:n { chapter }
+\__fancythm_counter_sub_if_exist:n { part }
+\counter_alias:nn   { toplevel       } { indocument  }
+\counter_new_sub:nn { sublevel       } { toplevel    }
+\counter_new_sub:nn { subsublevel    } { sublevel    }
+\counter_new_sub:nn { subsubsublevel } { subsublevel }
+\str_new:N \g__fancythm_style_str
+\bool_new:N \g__fancythm_translator_bool
+\bool_new:N \g__fancythm_generate_defaults_bool
+\tl_new:N    \l__fancythm_key_name_tl
+\tl_new:N    \l__fancythm_key_mdframed_tl
+\tl_new:N    \l__fancythm_key_style_tl
+\clist_new:N \l__fancythm_key_group_clist
+\clist_new:N \l__fancythm_key_thmtools_clist
+\tl_new:N    \l__fancythm_name_tl
+\clist_new:N \l__fancythm_thmtools_clist
+\clist_new:N \l__fancythm_group_clist
+\clist_new:N \g__fancythm_groupthm_option_clist
+\keys_define:nn { fancythm }
+  {
+    translator        .bool_set:N   = \g__fancythm_translator_bool           ,
+    translator        .default:n    = { true }                               ,
+    generate defaults .bool_set:N   = \g__fancythm_generate_defaults_bool    ,
+    generate defaults .default:n    = { true }                               ,
+    number in         .choices:nn   =
+      { document, section, subsection, chapter, part }
+      {
+        \counter_alias:nx { toplevel } { in \tl_use:N \l_keys_choice_tl }
+      }                                                                      ,
+    number in         .default:n    = { document }                           ,
+    style             .choices:nn   =
+      { fancy, plain, classic }
+      {
+        \str_set:Nn \g__fancythm_style_str { \tl_use:N \l_keys_choice_tl }
+      }                                                                      ,
+    style             .default:n    = { fancy }                              ,
+    cache             .code:n       =
+      {
+        \clist_put_right:Nn \g__fancythm_groupthm_option_clist { cache = #1 }
+      }                                                                      ,
+    cache             .default:n    = { true }                               ,
+    cache version     .code:n       =
+      {
+        \clist_put_right:Nn \g__fancythm_groupthm_option_clist { cache version = #1 }
+      }                                                                      ,
+    cache version     .default:n    = { 0 }                                  ,
+  }
+\keys_define:nn { fancythm / fancytheorem }
+  {
+    name            .tl_set:N      = \l__fancythm_key_name_tl           ,
+    name            .default:n     = \c_novalue_tl               ,
+    mdframed        .tl_set:N      = \l__fancythm_key_mdframed_tl       ,
+    mdframed        .default:n     = \c_novalue_tl               ,
+    style           .tl_set:N      = \l__fancythm_key_style_tl          ,
+    style           .default:n     = \c_novalue_tl               ,
+    group           .clist_set:N   = \l__fancythm_key_group_clist       ,
+    group           .default:n     = {}                          ,
+    thmtools        .clist_set:N   = \l__fancythm_key_thmtools_clist    ,
+    thmtools        .default:n     = {}                          ,
+  }
+\keys_set:nn { fancythm } { translator, generate defaults, number in, style }
+\ProcessKeysOptions{ fancythm }
+
+\cs_new:Npn \__fancythm_require_package:nn #1
+  {
+    \RequirePackage [ #1 ]
+  }
+\cs_generate_variant:Nn \__fancythm_require_package:nn { V n }
+\__fancythm_require_package:Vn \g__fancythm_groupthm_option_clist { groupthm }
+\bool_if:NTF \g__fancythm_translator_bool
+  {
+    \RequirePackage{translator}
+    \usedictionary{translator-environment-names}
+    \cs_set_eq:NN \__fancythm_translate:n \translate
+  }
+  {
+    \cs_set_eq:NN \__fancythm_translate:n \use:n
+  }
+\cs_new:Npn \__fancythm_set_normalized_keys:nn #1 #2
+  {
+    \keys_set:nn { fancythm / fancytheorem } { name, mdframed, style, group, thmtools }
+    \keys_set:nn { fancythm / fancytheorem } { #1 }
+    \clist_set_eq:NN \l__fancythm_group_clist \l__fancythm_key_group_clist
+    \clist_set_eq:NN \l__fancythm_thmtools_clist \l__fancythm_key_thmtools_clist
+    \tl_if_eq:NnF \l__fancythm_key_mdframed_tl { \c_novalue_tl }
+      {
+        \clist_put_right:Nx \l__fancythm_thmtools_clist
+          {
+            mdframed = { style = \tl_use:N \l__fancythm_key_mdframed_tl }
+          }
+      }
+    \tl_if_eq:NnF \l__fancythm_key_style_tl { \c_novalue_tl }
+      {
+        \clist_put_right:Nx \l__fancythm_thmtools_clist
+          {
+            style = \tl_use:N \l__fancythm_key_style_tl
+          }
+      }
+    \tl_if_eq:NnTF \l__fancythm_key_name_tl { \c_novalue_tl }
+      {
+        \tl_set:Nx \l__fancythm_name_tl
+        {
+          \text_titlecase_first:n { \tl_trim_spaces:n { #2 } }
+        }
+      }
+      {
+        \tl_set_eq:NN \l__fancythm_name_tl \l__fancythm_key_name_tl
+      }
+    \tl_set:Nx \l__fancythm_name_tl
+      {
+        \exp_not:N \csname __fancythm_translate:n \exp_not:N \endcsname { \tl_use:N \l__fancythm_name_tl }
+      }
+  }
+\cs_new:Npn \__fancythm_wrap_multiple:nnn #1 #2 #3
+  {
+    \cs_set:Npn \__fancythm_map_aux:n ##1
+      {
+        \cs_new:cn { #2 }
+          {
+            #3
+          }
+      }
+    \clist_map_function:nN { #1 } \__fancythm_map_aux:n
+  }
+\__fancythm_wrap_multiple:nnn
+{ new, provide }
+{ fancythm_#1_theorem:nnnn }
+  {
+    \use:c { groupthm_#1_family:nnnnn } { ##1 } { dagger, star, nobraces } { ##3 } { ##4 } { ##2 }
+    \use:c { groupthm_#1_family_options:nnnn }
+      { ##1 }
+      { !s !t+ !t-}
+      {
+        \IfBooleanT { ####1 }
+          {
+            \AddTheoremToGroup { star }
+          }
+        \IfBooleanT { ####2 }
+          {
+            \AddTheoremToGroup { dagger }
+          }
+        \IfBooleanT { ####3 }
+          {
+            \AddTheoremToGroup { nobraces }
+          }
+      }
+      { ##2 }
+  }
+\cs_generate_variant:Nn \fancythm_new_theorem:nnnn { n V V V }
+\cs_generate_variant:Nn \fancythm_provide_theorem:nnnn { n V V V }
+\__fancythm_wrap_multiple:nnn
+{ new, provide }
+{ fancythm_#1_theorem:nn }
+  {
+    \__fancythm_set_normalized_keys:nn { ##1 } { ##2 }
+    \use:c { fancythm_#1_theorem:nVVV }
+      { ##2 }
+      \l__fancythm_group_clist
+      \l__fancythm_name_tl
+      \l__fancythm_thmtools_clist
+  }
+\cs_new:Npn \__fancythm_new_document_command:Nnn #1 #2 #3
+  {
+    \NewDocumentCommand { #1 } { #2 } { #3 }
+  }
+\cs_generate_variant:Nn \__fancythm_new_document_command:Nnn { c n n }
+\cs_new:Npn \__fancythm_wrap_multiple_document:nnnn #1 #2 #3 #4
+  {
+    \cs_set:Npn \__fancythm_map_aux:n ##1
+      {
+        \cs_set:Nn \__fancythm_Declarator: { \text_titlecase_first:n { ##1 } }
+        \__fancythm_new_document_command:cnn { #2 } { #3 } { #4 }
+      }
+    \clist_map_function:nN { #1 } \__fancythm_map_aux:n
+  }
+\__fancythm_wrap_multiple_document:nnnn
+  { new, provide }
+  { \__fancythm_Declarator: FancyTheorem }
+  { O{} m }
+  {
+    \use:c { fancythm_#1_theorem:nn } { ##1 } { ##2 }
+  }
+\declaretheoremstyle[notebraces={{}{}}]{nobraces}
+\groupthm_new_group:nnnnn { star   } { } { *      } { } { }
+\groupthm_new_group:nnnnn { dagger } { } { $^{\dagger}$ } { } { }
+\groupthm_new_group:nnnnn { big    } { } {        } { } { sibling = toplevel }
+\groupthm_new_group:nnnnn { small  } { } {        } { } { sibling = sublevel }
+\groupthm_new_group:nnnnn { tiny   } { } {        } { } { numbered = no      }
+\groupthm_new_group:nnnnn { custom } { } {        } { } { sibling = sublevel }
+\groupthm_new_group:nnnnn { nobraces } { } {        } { } { style = nobraces }
+\groupthm_add_parent:nn { star   } { custom }
+\groupthm_add_parent:nn { dagger } { custom }
+\DeclareTheoremGroupRule [ suffix ] { dagger  } { higher } { star     }
+\DeclareTheoremGroupRule            { tiny    } { higher } { small    }
+\DeclareTheoremGroupRule            { tiny    } { higher } { big      }
+\DeclareTheoremGroupRule            { tiny    } { higher } { custom   }
+\DeclareTheoremGroupRule            { small   } { higher } { big      }
+\DeclareTheoremGroupRule            { custom  } { higher } { big      }
+\cs_new:Npn \fancythm_add_provided_theorem_to_group:nn #1 #2
+  {
+    \cs_if_exist:cF { __fancythm_provided_theorem__#1__group_clist }
+      {
+        \clist_new:c { __fancythm_provided_theorem__#1__group_clist }
+      }
+    \clist_put_left:cn { __fancythm_provided_theorem__#1__group_clist } { #2 }
+  }
+\NewDocumentCommand { \AddProvidedFancyTheoremToGroup } { m m }
+  {
+    \fancythm_add_provided_theorem_to_group:nn { #1 } { #2 }
+  }
+\cs_new:Npn \__fancythm_provide_package_theorem:nnn #1 #2 #3
+  {
+    \__fancythm_set_normalized_keys:nn { #1 } { #2 }
+    \cs_if_exist:cT { __fancythm_provided_theorem__#2__group_clist }
+      {
+        \clist_concat:ccc
+          { l__fancythm_group_clist }
+          { __fancythm_provided_theorem__#2__group_clist }
+          { l__fancythm_group_clist }
+      }
+    \clist_if_in:NnF \l__fancythm_group_clist { big }
+      {
+        \clist_if_in:NnF \l__fancythm_group_clist { small }
+          {
+            \clist_if_in:NnF \l__fancythm_group_clist { tiny }
+              {
+                \clist_put_right:Nn \l__fancythm_group_clist { #3 }
+              }
+          }
+      }
+    \fancythm_provide_theorem:nVVV
+      { #2 }
+      \l__fancythm_group_clist
+      \l__fancythm_name_tl
+      \l__fancythm_thmtools_clist
+  }
+\cs_new:Npn \fancythm_provide_big_theorem:nn #1 #2
+  {
+    \__fancythm_provide_package_theorem:nnn { #1 } { #2 } { big }
+  }
+\cs_new:Npn \fancythm_provide_small_theorem:nn #1 #2
+  {
+    \__fancythm_provide_package_theorem:nnn { #1 } { #2 } { small }
+  }
+\cs_new:Npn \fancythm_provide_tiny_theorem:nn #1 #2
+  {
+    \__fancythm_provide_package_theorem:nnn { #1 } { #2 } { tiny }
+  }
+\bool_if:NT \g__fancythm_generate_defaults_bool
+  {
+    \AddToHook { begindocument / before } [ fancythm ]
+      {
+        \fancythm_provide_big_theorem:nn { style = thmredmarginandfill } { theorem }
+        \fancythm_provide_big_theorem:nn { style = thmredmarginandfill } { proposition }
+        \fancythm_provide_big_theorem:nn { style = thmredmarginandfill } { corollary }
+        \fancythm_provide_big_theorem:nn { style = thmbluemarginandfill } { definition }
+        \fancythm_provide_big_theorem:nn { style = thmorangemarginandfill} { lemma   }
+        \fancythm_provide_big_theorem:nn { style = thmgreenmargin }        { example }
+        \fancythm_provide_big_theorem:nn
+          {
+            style = thmredmarginbluefill,
+            name = Theorem ~ and ~  Definition
+          } { theoremdef }
+        \fancythm_provide_big_theorem:nn
+          {
+            style = thmredmarginbluefill,
+            name = Proposition ~ and ~ Definition
+          } { propositiondef }
+        \fancythm_provide_big_theorem:nn
+          {
+            style = thmorangemarginbluefill,
+            name = Lemma ~ and ~ Definition
+          } { propositiondef }
+        \fancythm_provide_small_theorem:nn { style = thmvioletmargin } { notation }
+        \fancythm_provide_small_theorem:nn { style = thmyellowmargin } { remark }
+        \fancythm_provide_small_theorem:nn { style = thmgoldmargin } { praise }
+        \fancythm_provide_small_theorem:nn { style = thmblackmarginandfill } { question }
+        \fancythm_provide_small_theorem:nn { style = thmblackmargin } { orga }
+        \fancythm_provide_small_theorem:nn { style = thmredmargin } { fact }
+        \fancythm_provide_small_theorem:nn
+          {
+            style = thmyellowmargin,
+            name = Trivial ~ Nonsense
+          } { trivial }
+        \fancythm_provide_small_theorem:nn
+          {
+            style = thmvioletmargin,
+            name = Abuse ~ of ~ Notation
+          } { abuse }
+        \fancythm_provide_small_theorem:nn
+          {
+            style = thmyellowmargin,
+            name = Oral ~ remark
+          } { oral }
+          \fancythm_provide_tiny_theorem:nn { } { variant }
+          \fancythm_provide_tiny_theorem:nn { } { assumption }
+          \fancythm_provide_tiny_theorem:nn { } { note }
+          \fancythm_provide_tiny_theorem:nn { } { warning }
+          \fancythm_provide_tiny_theorem:nn { } { goal }
+          \fancythm_provide_tiny_theorem:nn { } { strategy }
+          \fancythm_provide_tiny_theorem:nn { } { problem }
+          \fancythm_provide_tiny_theorem:nn { } { info }
+          \fancythm_provide_tiny_theorem:nn { } { observe }
+          \fancythm_provide_tiny_theorem:nn { } { property }
+          \fancythm_provide_tiny_theorem:nn { } { intuition }
+          \fancythm_provide_tiny_theorem:nn { } { recall }
+          \fancythm_provide_tiny_theorem:nn { } { idea }
+          \fancythm_provide_tiny_theorem:nn { } { exercise }
+          \fancythm_provide_tiny_theorem:nn { } { reminder }
+      }
+  }
+\DeclareHookRule { begindocument / before } { groupthm } { after } { fancythm }
+\endinput
+%%
+%% End of file `fancythm.sty'.

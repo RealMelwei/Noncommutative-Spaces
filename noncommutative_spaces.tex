@@ -1,0 +1,126 @@
+\documentclass[american]{scrartcl}
+
+\usepackage{babel}
+\usepackage{xcolor}
+
+\usepackage{mkessler-math}
+\usepackage{mkessler-vocab}
+\usepackage{mkessler-enumerate}
+\usepackage{fancythm}
+\usepackage{csquotes}
+
+\title{Noncommutative Spaces}
+\subtitle{Lecture Course, Summer Semester 2025}
+\author{Koen van den Dungen\thanks{Notes by Melvin Weiß}}
+
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\weaktodo}[1]{\textcolor{orange}{Maybe: #1}}
+\renewcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\inv}{^{-1}}
+\newcommand{\eps}{\varepsilon}
+\DeclareSimpleMathOperator{const}
+\DeclareSimpleMathOperator{sp}
+
+\begin{document}
+	\maketitle
+	
+	\cleardoublepage
+	
+	\tableofcontents
+	
+	\cleardoublepage
+	
+	
+	
+	\section{Introduction}
+	\todo{Motivation}
+	
+	\section{$C^*$-Algebras}
+	\begin{definition}
+		A \textit{Banach algebra} is a (not necessarily unital or commutative) $\C$-algebra $A$ together with a norm $\norm{.}:A\to \R$ such that:
+		\begin{itemize}
+			\item $\norm{.}$ is \textit{submultiplicative}: $\norm{ab}\leq\norm{a}\norm{b}$ for all $a,b\in A$.
+			\item $(A,\norm{.})$ is a \textit{Banach space}: A complete normed vector space.
+		\end{itemize}
+	\end{definition}
+	\begin{remark}
+		The multiplication on a Banach algebra $A$ is continuous: As for all $a,b\in A$ we have $\norm{ab}\leq \norm{a}\norm{b}$, the linear map $a\cdot(-)\colon A\to A$ is a bounded operator, hence continuous.
+	\end{remark}
+	\begin{remark}
+		We can usually assume $A$ to be \textit{unital} (i.e. there is some $1\in A$ with $1\cdot a=a\cdot 1 = a$ for all $a\in A$), otherwise replacing it by the \textit{unitization} $\tilde{A}$ of $A$, given by:
+		\begin{align*}
+			\tilde{A}\coloneqq A\oplus\C
+		\end{align*}
+		with the multiplication
+		\begin{align*}
+			(a,\lambda)\cdot (b,\mu)\coloneqq (ab+\lambda B+\mu A,\lambda\mu)
+		\end{align*}
+		and the norm
+		\begin{align*}
+			\norm{(a,\lambda)}\coloneqq \norm{a}+\abs{\lambda}.
+		\end{align*}
+		This is in fact a unital Banach algebra: The unit is given by $(0,1)$, as witnessed by
+		\begin{align*}
+			(0,1)\cdot (a,\lambda)=(a,\lambda)=(a,\lambda)\cdot (0,1)
+		\end{align*}
+		for $(a,\lambda)\in \tilde{A}$. $\tilde{A}$ is a Banach space as $\C$ is one and the sum of Banach spaces is again a Banach space. Submultiplicativity follows from
+		\begin{align*}
+			\norm{(a,\lambda)\cdot (b,\mu)}&=\norm{ab+\lambda b+\mu a}+\abs{\lambda\mu}\\
+			&\leq \norm{ab}+\norm{\lambda b}+\norm{\mu a}+\abs{\lambda\mu}\\
+			&\leq\norm{a}\norm{b}+\abs{\lambda} \norm{b}+\abs{\mu}\norm{a}+\abs{\lambda}\abs{\mu}\\
+			&=\norm{(a,\lambda)}\norm{(b,\mu)}.
+		\end{align*}
+		 Confirming the algebra structure is a straightforward check.
+		\weaktodo{Remark on adjunction}
+	\end{remark}
+	\begin{example}
+		\begin{enumerate}
+			\item Let $V$ be a Banach space. Then
+			\begin{align*}
+				\cB(V)\coloneqq \left\{T\colon V\to V\mid T\text{ bounded linear}\right\}
+			\end{align*}
+			with norm $\norm{T}\coloneqq\sup_{v\in V}\frac{\norm{Tv}}{\norm{v}}$ and composition as multiplication is a unital Banach algebra.
+			\item Let $X$ be a topological space. We can define
+			\begin{align*}
+				\cC_b(X)\coloneqq \left\{f:X\to \C\mid f\text{ continuous, }\sup_{x\in X}\abs{f(x)}<\infty\right\}
+			\end{align*}
+			and
+			\begin{align*}
+				\cC_0(X)\coloneqq\left\{f\in \cC_b(X)\mid\forall \eps>0\exists K\subseteq X \text{ compact, }f\inv((-\eps,\eps))\subseteq K\right\}
+			\end{align*}
+			with pointwise multiplication and $\norm{f}\coloneqq\sup_{x\in X}\abs{f(x)}$. Both of these form Banach algebras. $\cC_b$ is always unital with unit $\const_1$, whereas $\cC_0$ is unital if and only if $X$ is compact.
+		\end{enumerate}
+	\end{example}
+	\begin{definition}
+		A \textit{(twosided) ideal} $J\subseteq A$ is a subspace $J\subseteq A$ with $AJ\subseteq J$ and $JA\subseteq J$. This is equivalent to $J$ being a twosided ideal of $A$ viewed as an ordinary (non-unital) ring.
+	\end{definition}
+	\begin{lemma}
+		If $J\subseteq A$ is a closed ideal, the quotient ring $A/J$ equipped with the norm
+		\begin{align*}
+			\norm{a+J}\coloneqq \inf_{j\in J}\norm{a+j}
+		\end{align*}
+		is again a Banach algebra.
+	\end{lemma}
+	\begin{proof}
+		Quotients of algebras under twosided ideals are again algebras, hence so is $A/J$. Further, the underlying normed vector space of $A/J$ agrees with the quotient $A/J$ of underlying normed vector spaces, hence is the quotient of a Banach space by a closed subspace and as such again a Banach space.
+	\end{proof}
+	\begin{example}
+		For a Banach algebra $A$, $A\subseteq \tilde{A}$ is a twosided ideal.
+	\end{example}
+	\begin{proof}
+		The map $p:\tilde{A}\to \C, (a,\lambda)\mapsto \lambda$ is a ring homomorphism, hence the kernel $\ker p=A$ is a twosided ideal. Further, $p$ is continuous and $\{0\}\subseteq\C$ is closed, hence so is $A$.
+	\end{proof}
+	\begin{definition}
+		For a unital Banach algebra $A$ and an element $a\in A$, we define the \textit{spectrum}
+		\begin{align*}
+			\sp(a)\coloneqq \{\lambda\in \C\mid (\lambda-a)\not\in A^{\times}\},
+		\end{align*}
+		where $A^{\times}$ is the group of units of $A$. We further define the spectral radius
+		\begin{align*}
+			r(a)\coloneqq \sup_{\lambda\in \sp(a)}\abs{\lambda}.
+		\end{align*}
+	\end{definition}
+\end{document}

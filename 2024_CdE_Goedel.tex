@@ -1,0 +1,577 @@
+\documentclass[ngerman]{scrartcl}
+
+\usepackage{babel}
+\usepackage{xcolor}
+
+\usepackage{mkessler-math}
+\usepackage{mkessler-vocab}
+\usepackage{mkessler-enumerate}
+\usepackage{fancythm}
+\usepackage{csquotes}
+
+\title{Kurt Goedel - Leben und Werk}
+\subtitle{Kurs auf der CdE-Winteraka 2023/2024}
+\author{Merlin Carl\thanks{Mitschrift von Maximilian Keßler}}
+
+\def\shows{\leftadjoint}
+\DeclareSimpleMathOperator{prim}
+\DeclareSimpleMathOperator{Ind}
+\DeclareSimpleMathOperator{suc}
+\DeclareSimpleMathOperator{digit}
+\DeclareSimpleMathOperator{bew}
+\DeclareSimpleMathOperator{beweisbar}
+\DeclareSimpleMathOperator{Subst}
+\DeclareSimpleMathOperator{Con}
+\DeclareMathOperator\xor{\stackrel{.}{\vee}}
+
+\begin{document}
+  \maketitle
+
+  \cleardoublepage
+
+  \tableofcontents
+
+  \cleardoublepage
+
+
+
+\section{Einleitung}
+
+\large{Steckbrief von Kurt Friedrich Gödel}
+
+\begin{itemize}
+  \item Geboren am 28.06.1906 (Brünn, Mähren (Tschechien, damals Österreich-Ungarn))
+  \item Vater Rudolf Gödel (Manager einer Textilfabrik), Mutter Marianne Gödel (geb. Handschuh), Bruder  ? Gödel)
+  \item Ab 1924: Studium in Wien (Physik, Mathematik, Philosophie)
+  \item 1929: Österreichische Staatsbürgerschaft; \\
+    Promotion (Beweis des Vollständigkeitssatzes)
+  \item 1930: Unvollständigkeitssätze
+  \item 1935: Relative Konsistenz des Auswahlaxioms \\
+    Heirat mit Adele Nimbursky (geb. Porkert)
+  \item 1937: Relative Konsistenz der Kontinuumshypothese
+  \item 1940: Emigration in die USA (Princeton), Mitglied des IAS \\
+    Arbeit zu \enquote{Geschlossene zeitartige Kurven}
+  \item 1941: Ontologischer Gottesbeweise
+  \item 1948: Amerikanische Staatsbürgerschaft
+  \item 1951: Albert Einstein Award; 1957 National Medal of Science etc.
+  \item 1953: Professur am IAS
+  \item 1956: Emeritierung
+  \item Diverse philosophische Aufsätze, ontologischer Gottesbeweis, Überlegungen zur Kontinuumshypothese
+  \item Gestorben 14.01.1978 (Princeton)
+\end{itemize}
+
+
+\section{Semantik}
+
+\begin{definition}[Sprache]
+  Eine \vocab{Sprache} $\mathcal{S}$ besteht aus
+  \begin{enumerate}[1.]
+    \item Prädikatensymbolen $P$, $Q$, $R$, alle mit fester Arität (auf wie viele Terme man das Prädikat anwendet)
+    \item Funktionszeichen $f$, $g$, $h$, ebenfalls jeweils mit Arität.
+    \item Konstantenzeichen $a$, $b$, $c$, \ldots
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[S-Struktur]
+  Eine \vocab{S}-Struktur für eine Sprache $\mathcal{S}$ besteht aus
+  \begin{itemize}
+    \item einer Domäne (Menge) $M$
+    \item Für jedes Prädikatenzeichen von $\mathcal{S}$ eine Relation über $M$
+    \item Für jedes Funktionszeichen und jede Konstante von $\mathcal{S}$ eine Funktion bzw.~ein Element aus $M$.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  Sei $\mathcal{S}$ eine Sprache und $\mathcal{A}$ ein Axiomensystem, d.h.~eine Menge an Formeln über $\mathcal{S}$.
+ Für eine Formel $\varphi $ schreiben wir $\mathcal{A} \models \varphi $,
+ falls aus $\mathcal{A}$ \vocab{semantisch} die Formel $\varphi $ folgt,
+ d.h.~falls für alle $\mathcal{S}$-Strukturen, in denen $\mathcal{A}$ wahr ist,
+ auch $\varphi $ wahr ist.
+\end{definition}
+
+
+\subsection{Ableitungsregeln: Tableau-Kalkül}
+
+\begin{definition}[Tableu-Kalkül]
+  Eine \vocab{Herleitung} für eine Formel $\varphi $ im \vocab{Tableau-Kalkül}
+  besteht immer daraus, mit der Formel $\lnot \varphi $ anzufangen
+  und dann durch Anwendung von Schlussregeln einen Baum zu erzeugen.
+  Ein Ast des Baumes gilt als \vocab{abgeschlossen}, wenn auf ihm sowohl $\psi $ als auch $\lnot \psi $ stehen, sich also ein Widerspruch ergeben hat.
+  Eine Herleitung von $\varphi $ ist es, alle Äste des Baumes, an dessen Wurzel $\lnot \varphi $ steht, zu schließen.
+
+  Folgende formale Regeln erlauben wir für logische Schlussfolgerungen:
+  \begin{itemize}
+    \item Steht $\lnot \lnot \varphi $ auf einem Ast, füge $\varphi $ hinzu.
+    \item Steht $α_1 \land α_2$ auf einem Ast, füge $α_1$ und $α_2$ hinzu
+    \item Steht $α_1 \lor α_2$ auf einem Ast, spalte in einen Ast mit $α_1$ und einen mit $α_2$
+    \item Steht $α_1 \to  α_2$ auf einem Ast, spalte in $\lnot α_1$ und $α_2$
+    \item Ergänze $\lnot (\varphi  \to \psi )$ durch $\varphi $ und $\lnot \psi $
+    \item Ergänze $\lnot (\varphi  \varphi  \lor \psi )$ durch $\lnot \varphi $ und $\lnot \psi $
+    \item Spalte $\lnot (\varphi  \land \psi )$ in $\lnot \varphi $ und $\lnot \psi $
+  \end{itemize}
+  Folgende Regeln sind für Quantoren erlaubt:
+  \begin{itemize}
+    \item Ergänze $\exists x \varphi $ durch $\varphi ^{[ x \leftarrow  a]}$ für ein neues Konstantenzeichen $a$. Hierbei steht $\varphi ^{[ x \leftarrow a]}$ für die Formel, in der wir $x$ durch $a$ ersetzen
+    \item Ergänze $\lnot \forall x \varphi $ durch $\lnot \varphi ^{[ x \leftarrow a]}$ für ein neues Konstantenzeichen $a$
+    \item Ergänze $\forall x \varphi $ durch $\varphi [ x \leftarrow l]$ für einen Term $t$
+    \item Ergänze $\lnot \exists x \varphi $ durch $\lnot \varphi ^{[ x \leftarrow t]}$ für einen Term $t$
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  Man sollte sich den entstehenden Baum so vorstellen, dass man auf jedem Ast wissen sammelt. Jede neue Zeile fügt neues Wissen hinzu, man kann also jederzeit Wissen des eigenen Astes verwenden.
+  Wenn wir einen Ast in 2 neue Aufteilen, entspricht das einer üblichen Fallunterscheidung.
+
+  Wenn wir alle Äste schließen, haben wir alle Fälle zum Widerspruch geführt.
+\end{remark}
+
+\begin{exercise}
+  Man mache sich für alle obigen formalen Schlussfolgerungen Gedanken,
+  was diese \emph{intuitiv} sagen.
+  Das heißt, welches Wissen wird hier in welches neue Wissen verwandelt,
+  und warum macht das Sinn, bzw.~warum würden wir erwarten, dass dies eine
+  sinnvolle logische Schlussregel ist.
+\end{exercise}
+
+\begin{example}[Logische Folgerungen]
+  Wir wollen die Aussage $(\varphi  \land \psi ) \to  \lnot (\lnot \varphi  \land \lnot \psi )$ zeigen.
+
+  \[
+    \begin{tikzcd}[column sep = tiny, row sep = tiny]
+      & \lnot ((\varphi \land \psi ) \to \lnot (\lnot \psi  \land \lnot \psi ) \ar[-]{d} \\
+      & \varphi  \land \psi  \ar[-]{d}\\
+      & \lnot \lnot (\lnot \psi  \lor \lnot \psi )  \ar[-]{d}\\
+      & \varphi   \ar[-]{d}\\
+      & \psi   \ar[-]{d}\\
+      & \lnot \varphi  \lor \lnot \psi
+      \ar[-]{dr}
+      \ar[-]{dl}
+      \\
+      \lnot \varphi  & & \lnot \psi 
+    \end{tikzcd}
+  \]
+\end{example}
+
+\begin{example}[Quantoren]
+  Sei $L(x,y)$ die Aussage \enquote{$x$ liebt $y$}.
+  Wir wollen zeigen: $\exists x \forall y L(x,y) \to \forall y \exists x L(x,y)$.
+  In gesprochener Sprache: Wenn es eine Person ($x$) gibt, die alle liebt,
+  dann wird jede Person von jemandem geliebt.
+
+  Eine Herleitung dieser Formel ist die Folgende:
+  \begin{gather*}
+    \lnot (\exists x \forall y \; L(x,y) \to \forall y \exists x \; L(x,y)) \\
+    \exists x \forall y \;L(x,y) \\
+    \lnot \forall y \exists x \; L(x,y) \\
+    \forall y \; L(a,y) \\
+    \lnot \exists x \; L(x,b) \\
+    L(a,b) \\
+    \lnot L(a,b)
+  \end{gather*}
+\end{example}
+
+\begin{notation}
+  Für eine Sprache $\mathcal{S}$ und ein Axiomensystem $\mathcal{A}$ schreiben wir
+  $A \shows \varphi $, falls sich aus $A$ und $\lnot \varphi $ eine geschlossenes
+  Tableau herleiten lässt.
+\end{notation}
+
+\begin{definition}[Korrektheit]
+  Wir sagen, dass eine Kombination aus Sprache und Schlussregeln \vocab{korrekt}
+  ist, wenn alle Formeln, die sich herleiten lassen (die also syntaktisch folgerbar sind),
+  auch sematisch folgebar sind.
+
+  Kompakter geschrieben sprechen wir von Korrektheit, wenn aus $\mathcal{A} \shows \varphi $ auch stets $\mathcal{A} \models \varphi $ folgt.
+\end{definition}
+
+\begin{remark}
+  Das zu beweisen ist letztendlich nicht schwer. Man muss sich \enquote{nur} davon überzeugen, dass jede einzelne der syntaktischen Schlussregeln so gestaltet ist,
+  dass sich auch in $S$-Strukturen die entsprechenden Schritte durchführen lassen.
+\end{remark}
+
+\begin{definition}[Vollständigkeit]
+  Ähnlich sprechen wir von \vocab{Vollständigkeit}, wenn jede Formel,
+  die sich semantisch herleiten lässt, auch syntaktisch herleiten lässt,
+  d.h.~ wenn aus $A \models \varphi $ auch schon $A \shows \varphi $ folgt.
+\end{definition}
+
+\begin{theorem}[Gödel'scher Vollständigkeitssatz]
+  Das Tableau-Kalkül ist korrekt und vollständig für jede Sprache $\mathcal{S}$.
+\end{theorem}
+
+\begin{remark}
+  Vollständigkeit zu beweisen ist weitaus schwieriger: Wir müssen über \emph{alle} $\mathcal{S}$-Strukturen etwas aussagen, haben aber nur eine fixe Menge an syntaktischen Regeln zur Verfügung.
+\end{remark}
+
+\begin{corollary}
+  Ist jede \emph{endliche} Teilmenge eines Axiomensystems konsistent,
+  so ist auch das Axiomensystem selbst konsistent.
+\end{corollary}
+
+\begin{proof}
+  Sei $\mathcal{A}$ dieses System und nimm an, dass man $\mathcal{A}$ nicht interpretieren kann, ich also keine $\mathcal{S}$-Struktur finde, in der $\mathcal{A}$ gilt.
+  Dann gilt insbesondere $\mathcal{A} \models \bot$, wobei $\bot$ irgendeine falsche Aussage sei, denn in jeder $\mathcal{S}$-Struktur, in der $\mathcal{A}$ gilt (es gibt keine solchen), gilt ja auch $\bot$.
+  Nach dem Vollständigkeitssatz gibt es dann auch schon eine Herleitung $\mathcal{A} \shows \bot$.
+  Eine Herleitung besteht allerdings aus endlich vielen Schritten,
+  also gibt es auch schon eine endliche Teilmenge $\mathcal{B} \subset \mathcal{A}$,
+  sodass $\mathcal{B} \shows \bot$.
+  Nach Korrektheit ist dann auch $\mathcal{B} \models \bot$,
+  also ist $\mathcal{B}$ inkonsistent, ein Widerspruch zu unserer Annahme.
+\end{proof}
+
+\section{Der Unvollständigkeitssatz}
+
+Wir wollen nun verstehen, wie man einfache Arithmetik
+(d.h.~Rechnen mit natürlichen Zahlen) in Prädikatenlogik formulieren kann.
+
+\begin{definition}
+  Sei $\mathcal{L}_A$ die Sprache mit Relationszeichen $=$, $<$, Funktionszeichen $+$, $\cdot $, sowie Konstantenzeichen $0$, $1$.
+\end{definition}
+
+\begin{example}
+  Wir können zum Beispiel folgende Übersetzungen treffen:
+  \begin{IEEEeqnarray*}{rCl}
+    \text{$a$ ist ein Teiler von $b$}
+    &\leftrightarrow&
+    \exists x : a \cdot x = b
+    \\
+    \text{$p$ ist keine Primzahl}
+    & \leftrightarrow &
+    \exists a\exists b\colon (a \neq 1 \land b \neq 1 \land a \cdot b = p)
+    \\
+    \text{$p$ ist eine Primzahl}
+    & \leftrightarrow &
+    \lnot (\exists a\exists b\colon a \neq 1 \land b \neq 1 \land a \cdot b = p)
+    \\
+    & \leftrightarrow &
+    \forall a \forall b\colon a \cdot b = p \to (a = 1 \lor b = 1)
+    \\
+    \text{Die Zahl \enquote{Zwei}}
+    & \leftrightarrow &
+    1 + 1
+  \end{IEEEeqnarray*}
+  Um uns Notation zu vereinfachen, führen wir $a \mid b$ sowie $\prim(p)$ mit den obigen Bedeutungen ein, ebenfalls können wir jede \emph{feste} natürliche Zahle als $1 + 1 + \dots b + 1$ kodieren.
+  Damit meinen wir nicht, dass wir die Sprache tatsächlich erweitern (um solche Relationssymbole), sondern einfach, dass man jede Vorkommnis von diesen Relationen rein formal durch ihre obige Langschreibweise ersetzen kann.
+
+  Jetzt lässt sich die (starke) Goldbach'sche Vermutung formulieren als
+  \[
+    \forall z ((z > 2 \land 2 \mid z) \to \exists a, b (z = a + b \land \prim(a) \land \prim(b)))
+    .
+  \]
+  Etwas schwieriger wird es, zu übersetzen, dass es unendlich viele Primzahlen gibt:
+  \[
+    \forall x \exists p (x < p \land \prim(p))
+    .
+  \]
+  Eigentlich steht hier eher etwas wie \enquote{Es gibt beliebig große Primzahlen},
+  allerdings ist das (in den natürlichen Zahlen) das gleiche Konzept.
+\end{example}
+
+\begin{definition}
+  Ein \vocab{Axiomensystem} ist eine Menge von Sätzen (Formeln).
+\end{definition}
+
+\begin{question}
+  Was sind wünschenswerte Eigenschaften eines Axiomensystems?
+\end{question}
+
+\begin{itemize}
+  \item \vocab{Widerspruchsfreiheit}, d.h.~es gibt keine Aussage $\varphi $, für die sowohl $\varphi $ als auch $\lnot \varphi $ bewiesen werden können
+  \item \vocab{Vollständigkeit}, d.h.~für jeden Satz $\varphi $ der Sprache gilt $A \shows \varphi $ oder $A \shows \lnot \varphi $.
+\end{itemize}
+
+\begin{remark}
+  Dieser Begriff der \emph{Vollständigkeit} ist ein anderer, wie wir ihn bereits gesehen haben.
+
+  Ein Kalkül kann vollständig sein, wenn $A \models \varphi \iff  A \shows \varphi $,
+  Herleitungen also vollständig die semantische wahren Aussagen widerspiegeln.
+
+  Ein Axiomensystem kann vollständig sein, indem $A \shows \varphi \lor A \shows \lnot \varphi $ für jede Formel $\varphi $.
+\end{remark}
+
+\begin{remark}
+  Beide Eigenschaften für sich sind natürlich einzeln leicht realisierbar:
+  Das leere Axiomensystem ist natürliche widerspruchsfrei, denn man kann gar nichts ableiten, und widersprüchliche Axiomensysteme sind vollständig, weil man jede Aussage zeigen kann.
+
+  Es gibt auch widerspruchsfreie und vollständige Systeme,
+  allerdings können diese nicht über Arithmetik reden.
+  Das wird Inhalt von Gödels Unvollständigkeitssatz sein.
+\end{remark}
+
+
+\subsection{Turing-Maschinen}
+Turing-Maschinen sind ein theoretisches Computermodell,
+das von \textsc{Alan Turing} eingeführt wurde.
+
+\begin{definition}
+  Eine \vocab{Turingmaschine} besteht aus einem (nach rechts hin)
+  unendlichen Speicherband, auf dem an jeder Position $0$ oder $1$ steht,
+  einem Schreib-/Lesekopf, der sich stets an einer Position findet.
+
+  Das Programm einer Turingmaschine besteht aus einer Liste an Zuständen,
+  wobei jeder Zustand in Abhängigkeit vom Wert des Bands am Lesekopf angibt:
+  \begin{itemize}
+    \item welchen Wert der Schreibkopf auf die aktuelle Position schreiben soll
+    \item in welche Richtung (links/rechts/stehen bleiben) sich der Schreibkopf als nächstes bewegt
+    \item was der nächste Programmzustand der Turingmaschine ist
+  \end{itemize}
+
+  Das Programm lässt sich also Beschreiben über eine Zustandsmenge $\mathcal{S}$
+  und eine Funktion
+  \[
+    \mathcal{S} \times \set{ 0,1 } \to  \set{ 0,1 } \times \set{ \text{links}, \text{rechts}, \text{stehen bleiben} } \times (\mathcal{S} \cup \set{ \operatorname{end} } )
+    ,
+  \]
+  wobei $\operatorname{end}$ beschreibt, dass das Programm terminiert hat.
+  Eine Turing-Maschine lässt sich ausgehend von einem Zustands des Speicherbands und einem Zustand $s \in \mathcal{S}$ sukzessive ausführen.
+\end{definition}
+
+Man könnte meinen, dass Turing-Maschinen nicht sehr viel können,
+allerdings gilt:
+
+\begin{proposition}[Church-Turing-These]
+  Jede Funktion auf endlichen Zeichenfolgen, die überhaupt berechenbar ist,
+  ist durch eine Turing-Maschine berechenbar.
+\end{proposition}
+
+\begin{remark}
+  Der Begriff \enquote{überhaupt berechenbar} ist hierbei natürlich mathematisch
+  unpräzise, und dementsprechend gibt es auch keinen formalen Beweis.
+  Wir meinen hiermit Funktionen, die ein idealisierter Mensch mit hinreichend viel
+  Zeit durch Ausführung eines Schemas berechnen kann.
+
+  Zum Beispiel lässt sich jede moderne Programmiersprache systematisch
+  in eine Turingmaschine übersetzen und es ist bis dato keine Funktion bekannt,
+  welche \emph{intuitiv berechenbar} ist, allerdings nicht von einer Turingmaschine.
+\end{remark}
+
+Die Church-Turing-These motiviert die folgende Definition:
+
+\begin{definition}[Berechenbarkeit]
+  Eine Funktion heißt \vocab{berechenbar}, wenn eine Turing-Maschine gibt,
+  die sie berechnet, d.h.~eine Turing-Maschine, die bei Kodierung der Eingabe
+  auf dem Band und Ausführung der Maschine stets nach endlich vielen Schritten
+  terminiert und eine korrekte Ausgabe auf das Band schreibt.
+\end{definition}
+
+\begin{corollary}
+  Es gibt ein Turing-Programm, das von einer Zeichenfolge $S$ feststellt,
+  ob sie ein korrekter Tableau-Beweis für eine Aussage $\varphi $
+  aus den Axiomen $\mathcal{A}$ ist.
+\end{corollary}
+
+Wir wollen nun ansehen, wie Gödel zu seinem Unvollständigkeitssatz kam:
+
+\underline{Schritt 1: Axiomatisierung}
+Zu einem gegebenen Turingprogramm $P$ funde eine arithmetische Formel $\varphi _P$ so,
+dass $\varphi _P(a,b)$ wahr ist genau dann, wenn $P$ bei Eingabe $a$ Ausgabe $b$ liefert.
+
+Die Zustände seien mit $\set{ S_1, \dotsc, S_n } $ bezeichnet,
+wir können $S_i$ durch die natürliche Zahl $i$ kodieren.
+Die Kopfposition ist ebenfalls eine natürliche Zahl, genauso wie der Bandinhalt.
+Die gesamte Konfiguration einer Turing-Maschine, die gerade ein Programm ausführt,
+ist also durch ein Tripel natürlicher Zahlen beschreibbar.
+
+Die Formel $\varphi^P _{\suc}(z_0, b_0, k_0, z_1, b_1, k_1)$ soll nun beschreiben,
+dass bei Ausführung des States $(z_0, b_0, k_0)$ sich im nächsten Schritt
+$(z_1, b_1, k_1)$ ergibt.
+
+Die Formel $\digit(z, i, j)$ ist erfüllt genau dann,
+wenn $j$ die $i$-te Ziffer von $z$ ist (wobei $i$-te Ziffer einer Zahl von hinten gezählt wird, die $1$-te Ziffer ist also die Einerziffer).
+
+Dann können wir zum Beispiel die Regel
+\[
+  (s_1, 0) \mapsto (s_2, 0, \text{rechts})
+\]
+durch die Formel
+\[
+  (z_0 = 1 \land \digit(b_0, k_0, 0)) \to (z_1 = 2 \land k_1 = k_0 + 1 \land b_1 = b_0)
+\]
+ausdrücken.
+Um Zustandsänderungen des Bandes auszudrücken, benötigen wir noch eine Formel
+$\operatorname{digitChange}(z_0, i, z_1)$, die ausdrückt, dass sich $z_0$ und $z_1$ genau
+in der $i$-ten Ziffer unterscheiden.
+Die Regel
+\[
+  (s_1, 1) \mapsto (s_0, 0, \text{links})
+\]
+können wir dann als
+\[
+  (z_0 = 1 \land \digit(b_0, k_0, 1) \to (z_1 = 9 \land k_1 = k_0 - 1 \land \operatorname{digitChange}(b_0, k_0, b_1))
+\]
+realisieren.
+
+Das Prädikat $\varphi ^P_{\suc}$ lässt sich nun als großes \enquote{Und} all dieser
+Zustandsimplikationen.
+
+Wir wollen nun noch Zustandsfolgen betrachten, um über den gesamten Berechnungsverlauf
+der Turingmaschine reden zu können.
+Hierzu kodieren wir Listen $(x_1, x_2, \dotsc, )$ von natürlichen Zahlen als das Produkt $2^{x_1} \cdot  3^{x_2} \cdot  \dotsb p_k^{x_k}$, wobei $p_k$ die $k$-te Primzahl sein.
+
+Jetzt können wir die ursprüngliche Formel $\varphi _P(a,b)$ ausdrücken als
+\begin{itemize}
+  \item Es gibt eine Zahl $m = p_1^{x_1} \cdot p_2^{x_2} \dotsc p_n^{x_n}$, sodas
+  \item $x_1$ kodiert die Konfiguration $(1,1,a)$.
+  \item $x_n$ kodiert die Konfiguration der Form $(-, -, b)$.
+  \item Für alle $2 \leq i \leq n$ gilt: $\varphi ^P_{\suc}(x_{i-1}, x_i)$.
+\end{itemize}
+
+Damit haben wir also Berechenbarkeit und somit auch Beweisbarkeit formalisiert.
+
+\begin{corollary}
+  Es existiert eine arithmetische Formel $\bew(a,b)$, die genau dann wahr ist,
+  wenn $a$ einen Tableaubeweis für die von $b$ kodierte Formel kodiert.
+\end{corollary}
+
+\begin{goal}
+  Konstruiere einen arithmetischen Satz $\varphi $, für den folgendes beweisbar ist:
+  \[
+    \varphi  \leftrightarrow \lnot \exists a \bew(a, \left\lceil \varphi  \right\rceil )
+    .
+  \]
+\end{goal}
+
+Es wird noch etwas dauern, dass wir genau solch ein $\varphi $ konstruieren können,
+weil wir noch besser $\left\lceil \varphi  \right\rceil $ verstehen müssen,
+um es in $\varphi $ selbst \enquote{einzubetten}.
+
+\subsection{Axiome der Arithmetik: Peano-Arithmetik}
+
+Die \vocab{Peano-Arithmetik} beschreibt (in Prädikatenlogik erster Stufe)
+ein Axiomensystem zur Formalisierung der Arithmetik der natürlichen Zahlen.
+
+Folgendes sind die Axiome von $\text{PA}^{-}$:
+\begin{IEEEeqnarray}{rCl}
+  a + 0 & = &  a \\
+  a + b & = & b + a \\
+  a + ( b + c ) & = & ( a + b ) + c \\
+  1 \cdot a & = & a \\
+  a \cdot  b & = & b \cdot  a \\
+  a \cdot  (b \cdot c) & = & (a \cdot b) \cdot c \\
+  a \cdot (b + c) & = & a \cdot b + a \cdot c \\
+  0 & < & 1 \\
+  a < b & \to & a + c < b + c \\
+  (a < b \land c > 0) & \to & c \cdot a < c \cdot b \\
+  a < b \xor b < a & \xor & a = b \\
+  a < b \land b < c & \to & a < c
+\end{IEEEeqnarray}
+Hierbei ist $\xor$ ein \enquote{exclusives oder},
+d.h. \emph{genau} einer der beiden soll wahr sein.
+
+In der Peano-Arithmetik fordern wir zusätzlich noch, dass \vocab{Induktion} gilt,
+d.h.~für jede Formel $\varphi (x)$ gilt das \vocab{Induktionsaxiom} 
+\begin{equation}
+  \Ind_{\varphi } \coloneqq  [ \varphi (0) \land \forall n \, (\varphi (n) \to \varphi (n+1))] \to \forall n \, \varphi (n)
+  .
+\end{equation}
+
+\begin{notation}
+  Wir führen das Prädikat $\beweisbar (\left\lceil \varphi  \right\rceil ) \coloneqq \exists a \bew(a, \left\lceil \varphi  \right\rceil )$ ein.
+\end{notation}
+
+\begin{lemma}[Gödel'sches Diagonallemma]
+  Sei $\psi (x)$ eine arithmetische Formel mit einer freien Variable $x$.
+  Dann existiert eine Formel $\varphi $, sodass
+  \[
+    \text{PA} \shows \varphi  \leftrightarrow \psi (\left\lceil \varphi  \right\rceil )
+    .
+  \]
+\end{lemma}
+
+Etwas salopp könnte man sagen, dass die Aussage von $\varphi $ ist,
+dass $\varphi $ die Eigenschaft $\psi $ besitzt.
+
+\begin{proof}
+  $\Subst(\left\lceil \varphi \right\rceil , a, \left\lceil \chi  \right\rceil )$ bedeute:
+  Wenn man für alle freien Variablen von $\varphi $ die Zahl $a$ einsetzt,
+  so erhält man $\chi $.
+  Wegen der Church-Turing These und unseren vorherigen Überlegungen
+  gibt es ein solches Prädikat in $\text{PA}$.
+
+  Betrachte nun die Formel
+  \[
+    \exists n (\Subst(\left\lceil \varphi  \right\rceil , \left\lceil \varphi  \right\rceil , n) \land \psi (n))
+    .
+  \]
+  Man könnte diese verbalisieren als \enquote{$\psi $ trifft auf die Selbsteinsetzung von $\varphi $ zu}.
+  Diese Formel hat selbst eine freie Variable und eine Gödelnummer $g$.
+  Wir können also folgende Aussage betrachten:
+  \[
+    G \coloneqq \exists n (\Subst(g, g, n) \land \psi (n))
+    .
+  \]
+  Die Aussage $G$ ist nun, was wir suchen:
+
+  Angenommen, $G$ ist wahr, dann gibt es ein $n$, sodass $\Subst(g,g,n) \land \psi (n)$ gilt.
+  Nach der Definition von $\Subst$ ist dann $n$ die Gödelnummer von $G$
+  (denn $G$ ist gerade dadurch entstanden, in die Formel mit Nummer $g$ die Zahl $g$ für alle freien Variablen einzusetzen). Es gilt also $\psi (n) = \psi (\left\lceil G \right\rceil )$. Das zeigt $G \to \psi (\left\lceil G \right\rceil )$.
+  
+  Angenommen, $\psi (\left\lceil G \right\rceil )$ ist wahr:
+  Dann gibt es ein $n$, nämlich $\left\lceil G \right\rceil $,
+  sodass $\Subst(g, g, n) \land \psi (n)$ erfüllt ist, also haben wir $G$ gefolgert.
+
+  Es gilt also $G \leftrightarrow \psi (\left\lceil G \right\rceil )$
+  wie gewünscht.
+\end{proof}
+
+Jetzt können wir das Diagonallemma auf die Aussage
+\[
+  \psi (\left\lceil \varphi  \right\rceil) \coloneqq \lnot \exists a \bew(a, \left\lceil \varphi  \right\rceil ) = \lnot \beweisbar(\left\lceil \varphi  \right\rceil )
+\]
+anwenden und erhalten die gewünschte Formel $\varphi $, sodass
+\[
+  \text{PA} \shows \varphi \leftrightarrow \lnot \beweisbar(\left\lceil \varphi  \right\rceil )
+\]
+gilt.
+Das beweist den Unvollständigkeitssatz.
+
+\begin{remark}
+  In unserer aktuellen Formulierung müssen wir als Prämisse für den Unvollständigkeitssatz
+  noch verwenden, dass das System keine falschen Aussagen beweist.
+  Unser Ziel ist es, dies darauf zu reduzieren, dass das System \enquote{nur}
+  widerspruchsfrei ist.
+
+  Wähle nun die Aussage
+  \[
+    \psi (\left\lceil \varphi  \right\rceil ) \coloneqq 
+    \forall a \left[\bew(a, \left\lceil \varphi  \right\rceil ) \to 
+    \exists b (b < a \land \bew(b, \left\lceil \lnot \varphi  \right\rceil ))\right]
+  \]
+  und wende wieder das Diagonallemma an.
+
+  Falls $\text{PA} \shows \varphi $, existiert ein $a$ mit $\bew(a, \left\lceil \varphi  \right\rceil )$, dann aber auch ein $b$ mit $\bew(b, \left\lceil \lnot \varphi  \right\rceil )$ und somit $\text{PA} \shows \lnot \varphi $, ein Widerspruch.
+
+  Angenommen, $\text{PA} \shows \lnot \varphi $,
+  also
+  \[
+    \text{PA} \shows \lnot \forall a \left[ \bew(a, \left\lceil \varphi  \right\rceil ) \to \exists b (b <a \land \bew(b, \left\lceil \lnot \varphi  \right\rceil ))\right]
+    .
+  \]
+  Also gibt es ein $a$ mit $\bew(a, \left\lceil \varphi  \right\rceil )$ und somit
+  $\text{PA} \shows \varphi $, ein Widerspruch.
+
+  Es folgt also:
+
+  {\color{green!70!black} Kein Axiomensystem, das PA erweitert und widerspruchsfrei ist, ist vollständig }
+
+  Jetzt stellen wir aber auch fest, dass
+  \[
+    \text{PA} \shows \Con(\text{PA}) \to \varphi 
+    ,
+  \]
+  wobei $\Con(\text{PA})$ dafür steht, dass $\text{PA}$ konsistent ist.
+  Also
+  \[
+    \lnot (    \text{PA} \shows \Con(\text{PA}))
+    .
+  \]
+\end{remark}
+
+%\[
+%  \begin{tikzpicture}
+%    \draw (-0,0) grid (10,1);
+%  \end{tikzpicture}
+%\]
+
+
+\end{document}

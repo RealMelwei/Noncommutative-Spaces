@@ -1,0 +1,142 @@
+%%
+%% This is file `thmstyle.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% thmstyle.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from thmstyle.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file thmstyle.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% File: thmstyle.dtx
+\ProvidesExplPackage{thmstyle}{2022/01/17}{0.0.1}{Styles for thmtools theorems.}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+\RequirePackage{mdframed}
+\RequirePackage{xcolor}
+\RequirePackage{l3keys2e}
+\bool_new:N \g__thmstyle_default_styles_bool
+\definecolor{gold}{RGB}{218,165,32}
+\keys_define:nn { thmstyle }
+  {
+    default styles   .bool_set:N  = \g__thmstyle_default_styles_bool,
+    default styles   .default:n   = { true },
+  }
+\ProcessKeysOptions { thmstyle }
+\cs_new:Npn \__thmstyle_mdframed_define_style:nn #1 #2
+  {
+    \mdfdefinestyle{#2}{#1}
+  }
+\cs_new:Npn \__thmstyle_thmtools_declare_style:nn #1 #2
+  {
+    \declaretheoremstyle[#1]{#2}
+  }
+\cs_generate_variant:Nn \__thmstyle_thmtools_declare_style:nn { x x }
+\cs_new:Npn \thmstyle_declare_mdf_style:nnn #1 #2 #3
+  {
+    \__thmstyle_mdframed_define_style:nn
+      {
+        linecolor       = #2,
+        linewidth       = 2pt,
+        leftmargin      = 0pt,
+        rightmargin     = 0pt,
+        rightline       = false,
+        topline         = false,
+        bottomline      = false,
+        backgroundcolor = #3,
+        skipabove       = 0.7\baselineskip,
+        skipbelow       = 0pt,
+        innerrightmargin = 10pt,
+        innerbottommargin = 5pt
+      }
+      {
+        #1
+      }
+  }
+\cs_generate_variant:Nn \thmstyle_declare_mdf_style:nnn { x n x }
+\NewDocumentCommand { \DeclareFancyMdfStyle } { o m o }
+  {
+    \thmstyle_declare_mdf_style:xnx
+      {
+        \IfValueTF { #3 }
+          {
+            #3
+          }
+          {
+            md #2 margin
+            \IfValueT { #1 }
+              {
+                and #1 fill
+              }
+          }
+      }
+      {
+        #2
+      }
+      {
+        \IfValueTF { #1 }
+          {
+            #1
+          }
+          {
+            white
+          }
+      }
+  }
+\NewDocumentCommand { \DeclareFancyThmStyle } { o m o }
+  {
+    \DeclareFancyMdfStyle [ #1 ] { #2 }
+    \__thmstyle_thmtools_declare_style:xx
+      {
+        mdframed      =
+          {
+            style = md #2 margin \IfValueT { #1 } { and #1 fill }
+          },
+        postheadspace = { 0.3em },
+        notefont      = \noexpand\mdseries,
+      }
+      {
+        \IfValueTF { #3 }
+          { #3 }
+          {
+            thm #2 margin
+            \IfBooleanT { #1 }
+              {
+                and #1 fill
+              }
+          }
+      }
+  }
+\bool_if:NT \g__thmstyle_default_styles_bool
+  {
+      \DeclareFancyThmStyle[red!8]{red}[thmredmarginandfill]
+      \DeclareFancyThmStyle[orange!10]{orange}[thmorangemarginandfill]
+      \DeclareFancyThmStyle[blue!7]{blue}[thmbluemarginandfill]
+      \DeclareFancyThmStyle{green!70!black}[thmgreenmargin]
+      \DeclareFancyThmStyle[green!10]{green!70!black}[thmgreenmarginandfill]
+      \DeclareFancyThmStyle{gold}[thmgoldmargin]
+      \DeclareFancyThmStyle{yellow!80!orange}[thmyellowmargin]
+      \DeclareFancyThmStyle{gray}[thmgraymargin]
+      \DeclareFancyThmStyle[violet!7]{violet}[thmvioletmarginandfill]
+      \DeclareFancyThmStyle{violet}[thmvioletmargin]
+      \DeclareFancyThmStyle[blue!7]{red}[thmredmarginbluefill]
+      \DeclareFancyThmStyle{red}[thmredmargin]
+      \DeclareFancyThmStyle[blue!7]{orange}[thmorangemarginbluefill]
+      \DeclareFancyThmStyle[violet!20!gray!20]{black}[thmblackmarginandfill]
+      \DeclareFancyThmStyle{black}[thmblackmargin]
+  }
+\endinput
+%%
+%% End of file `thmstyle.sty'.

@@ -1,0 +1,887 @@
+%%
+%% This is file `groupthm.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% groupthm.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from groupthm.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file groupthm.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% File: groupthm.dtx
+\ProvidesExplPackage{groupthm}{2022/02/02}{0.0.2}{Grouped theorems.}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+\RequirePackage{l3keys2e}
+\cs_new:Npn \__groupthm_thmtools_declare_theorem:nn #1 #2
+  {
+    \tl_log:n { Declaring ~ thmtools ~ theorem ~ #2 }
+    \declaretheorem [ #1 ] { #2 }
+    \__groupthm_cache:n
+      {
+         \csname __groupthm_thmtools_declare_theorem:nn \endcsname { #1 } { #2 }
+      }
+  }
+\cs_generate_variant:Nn \__groupthm_thmtools_declare_theorem:nn { V n }
+\cs_new:Npn \__groupthm_hook_gset_rule_foreach:nNnn #1 #2 #3 #4
+  {
+    \cs_set:Npn \__groupthm_map_aux:n ##1
+    {
+      \hook_gset_rule:nnnn { #1 } { ##1 } { #3 } { #4 }
+    }
+    \clist_map_function:NN #2 \__groupthm_map_aux:n
+  }
+\msg_new:nnn { groupthm } { unknown ~ group }
+{
+  Unknown  ~ group ~ '#1' ~ supplied ~ \msg_line_context:
+}
+\msg_new:nnn { groupthm } { unknown ~ key }
+{
+  Unknown ~  key ~ '#1' ~ supplied ~ \msg_line_context:
+}
+\msg_new:nnn { groupthm } { wrong ~ definition }
+{
+  Bad ~ definition ~ of ~ #1 ~ '#2' ~ \msg_line_context:, ~ #1 ~ is ~ #3 ~ defined.
+}
+\msg_new:nnn { groupthm } { misuse ~ add ~ theorem ~ to ~ group }
+  {
+    Bad ~ usage ~ of ~ 'AddTheoremToGroup' ~ macro ~ outside ~ theorem ~
+    family ~ options ~ \msg_line_context:
+  }
+\msg_new:nnnn { groupthm } { undefined ~ theorem ~ variant }
+  {
+    Bad ~ call ~ of ~ theorem ~ variant ~ of ~ '#1' ~ \msg_line_context:
+  }
+  {
+    You ~ wanted ~ to ~ call ~ the ~ variant ~ with ~ group(s) ~
+    '#2' ~ of ~ theorem ~ family ~ '#1', ~ but ~ it ~ has ~ not ~ been ~
+    generated ~ yet. ~
+    Probably ~ you ~ forgot ~ this. ~
+    \msg_see_documentation_text:n { groupthm }
+  }
+\hook_new:n { __groupthm/prefix   }
+\hook_new:n { __groupthm/suffix  }
+\hook_new:n { __groupthm/mapname   }
+\hook_new:n { __groupthm/thmtools  }
+\hook_new:n { __groupthm/groupsort }
+\cs_generate_variant:Nn \hook_gset_rule:nnnn { n n V n }
+\bool_new:N  \l__groupthm_key_starred_version_bool
+\tl_new:N    \l__groupthm_key_prefix_tl
+\tl_new:N    \l__groupthm_key_name_tl
+\tl_new:N    \l__groupthm_key_suffix_tl
+\clist_new:N \l__groupthm_key_group_clist
+\clist_new:N \l__groupthm_key_mapname_clist
+\clist_new:N \l__groupthm_key_thmtools_clist
+\tl_new:N    \l__groupthm_prefix_tl
+\tl_new:N    \l__groupthm_name_tl
+\tl_new:N    \l__groupthm_suffix_tl
+\clist_new:N \l__groupthm_mapname_clist
+\clist_new:N \l__groupthm_thmtools_clist
+\clist_new:N \l__groupthm_group_clist
+\clist_new:N \g__groupthm_defined_groups_clist
+\bool_new:N  \l__groupthm_in_family_options_environment_bool
+\int_new:N   \g__groupthm_append_groups_int
+\bool_new:N \g__groupthm_cache_bool
+\int_new:N \g__groupthm_cache_version_aux_int
+\int_new:N \g__groupthm_cache_version_document_int
+\int_set:Nn \g__groupthm_cache_version_aux_int { -1 }
+\tl_new:N \g__groupthm_lazy_document_tl
+\tl_new:N \g__groupthm_lazy_auxfile_tl
+\clist_new:N \g__groupthm_dump_auxfile_clist
+\clist_new:N \g__groupthm_dump_cache_clist
+\keys_define:nn { groupthm }
+  {
+    cache              .bool_set:N    = \g__groupthm_cache_bool,
+    cache              .default:n     = { true },
+    __cache version__  .int_set:N     = \g__groupthm_cache_version_document_int,
+    cache version      .meta:nn       = { groupthm } { cache = true, __cache version__ = #1 },
+    cache version      .default:n     = { 0 },
+  }
+\keys_define:nn { groupthm / theorem ~ group }
+  {
+    prefix      .tl_set:N      = \l__groupthm_key_prefix_tl,
+    prefix      .default:n     = \c_empty_tl,
+    suffix      .tl_set:N      = \l__groupthm_key_suffix_tl,
+    suffix      .default:n     = \c_empty_tl,
+    suffix      .groups:n      = { theoremgroup },
+    map ~ name  .clist_set:N   = \l__groupthm_mapname_clist,
+    map ~ name  .default:n     = {},
+    map ~ name  .groups:n      = { theoremgroup },
+    thmtools    .clist_set:N   = \l__groupthm_key_thmtools_clist,
+    thmtools    .default:n     = {},
+    unknown     .code:n        =
+      \msg_error:nnx { groupthm } { unknown ~ key } { \str_use:N \l_keys_key_str }
+  }
+\keys_define:nn { groupthm / grouped ~ theorem }
+  {
+    name                    .tl_set:N      = \l__groupthm_key_name_tl,
+    name                    .default:n     = \c_novalue_tl,
+    group                   .clist_set:N   = \l__groupthm_key_group_clist,
+    group                   .default:n     = {},
+    thmtools                .clist_set:N   = \l__groupthm_key_thmtools_clist,
+    thmtools                .default:n     = {},
+    starred ~ version       .bool_set:N    = \l__groupthm_key_starred_version_bool,
+    starred ~ version       .default:n     = { true },
+    unknown      .code:n        =
+      \msg_error:nnx { groupthm } { unknown ~ key } { \str_use:N \l_keys_key_str }
+  }
+\keys_define:nn { groupthm / theorem ~ family }
+  {
+    name                    .tl_set:N      = \l__groupthm_key_name_tl,
+    name                    .default:n     = \c_novalue_tl,
+    group                   .clist_set:N   = \l__groupthm_key_group_clist,
+    group                   .default:n     = {},
+    thmtools                .clist_set:N   = \l__groupthm_key_thmtools_clist,
+    thmtools                .default:n     = {},
+    starred ~ version       .bool_set:N    = \l__groupthm_key_starred_version_bool,
+    starred ~ version       .default:n     = { true },
+    unknown      .code:n        =
+      \msg_error:nnx { groupthm } { unknown ~ key } { \str_use:N \l_keys_key_str }
+  }
+\keys_define:nn { groupthm / theorem ~ family ~ options }
+  {
+    starred ~ version       .bool_set:N    = \l__groupthm_key_starred_version_bool,
+    starred ~ version       .default:n     = { true },
+    unknown      .code:n        =
+      \msg_error:nnx { groupthm } { unknown ~ key } { \str_use:N \l_keys_key_str }
+  }
+\ProcessKeysOptions { groupthm }
+\cs_new:Npn \__groupthm_set_normalized_keys:nnn #1 #2 #3
+  {
+    \keys_set:nn { groupthm / theorem ~ group   }
+      { prefix, suffix, thmtools, map ~ name        }
+    \keys_set:nn { groupthm / grouped ~ theorem }
+      { name,   group,  thmtools, starred ~ version }
+    \keys_set:nn { groupthm / theorem ~ family  }
+      { name,   group,  thmtools, starred ~ version }
+    \keys_set:nn { groupthm / #2 } { #1 }
+    \tl_if_eq:NnTF \l__groupthm_key_name_tl { \c_novalue_tl }
+      {
+        \tl_set:Nx \l__groupthm_name_tl
+          {
+            \text_titlecase_first:n {#3}
+          }
+      }
+      {
+        \tl_set_eq:NN \l__groupthm_name_tl \l__groupthm_key_name_tl
+      }
+    \bool_set_eq:NN  \l__groupthm_starred_version_bool \l__groupthm_key_starred_version_bool
+    \tl_set_eq:NN    \l__groupthm_prefix_tl            \l__groupthm_key_prefix_tl
+    \tl_set_eq:NN    \l__groupthm_suffix_tl            \l__groupthm_key_suffix_tl
+    \clist_set_eq:NN \l__groupthm_group_clist          \l__groupthm_key_group_clist
+    \clist_set_eq:NN \l__groupthm_mapname_clist        \l__groupthm_key_mapname_clist
+    \clist_set_eq:NN \l__groupthm_thmtools_clist       \l__groupthm_key_thmtools_clist
+  }
+\cs_new:Npn \__groupthm_add_to_group_ordering:n #1
+  {
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { __groupthm/groupsort }
+      \g__groupthm_defined_groups_clist
+      { before }
+      { #1 }
+  }
+\cs_new:Npn \__groupthm_remove_from_group_ordering:n #1
+  {
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { __groupthm/groupsort }
+      \g__groupthm_defined_groups_clist
+      { unrelated }
+      { #1 }
+  }
+\cs_new:Npn \__groupthm_add_to_sort_hook:n #1
+{
+  \hook_gput_code:nnn { __groupthm/groupsort }
+  { #1 }
+  {
+    \clist_put_left:Nn \l__groupthm_group_clist { #1 }
+  }
+}
+\cs_new:Npn \__groupthm_sort_group_names:
+  {
+    \hook_gremove_code:nn { __groupthm/groupsort  }{*}
+    \clist_map_function:NN \l__groupthm_group_clist \__groupthm_add_to_sort_hook:n
+    \clist_clear:N \l__groupthm_group_clist
+    \hook_use:n { __groupthm/groupsort }
+  }
+\cs_new:Npn \__groupthm_define_group:nnnnn #1#2#3#4#5
+  {
+  \cs_new:cpn { __groupthm_use_group__#1: }
+    {
+      \hook_gput_code:nnn { __groupthm/prefix } { #1 }
+        {
+            \tl_put_left:Nx \l__groupthm_prefix_tl { #2 }
+        }
+      \hook_gput_code:nnn { __groupthm/suffix } { #1 }
+        {
+            \tl_put_right:Nx \l__groupthm_suffix_tl { #3 }
+        }
+      \hook_gput_code:nnn { __groupthm/mapname } { #1 }
+        {
+          \clist_put_right:Nn \l__groupthm_mapname_clist { #4 }
+        }
+      \hook_gput_code:nnn { __groupthm/thmtools } { #1 }
+        {
+          \clist_put_right:Nn \l__groupthm_thmtools_clist { #5 }
+        }
+    }
+    \__groupthm_add_to_group_ordering:n { #1 }
+    \clist_new:c { g__groupthm_parents_group__#1__clist }
+    \hook_gset_rule:nnnn { ?? } { all        } { before } { #1 }
+    \hook_gset_rule:nnnn { ?? } { unnumbered } { after  } { #1 }
+    \hook_gset_rule:nnnn { ?? } { starred    } { after  } { #1 }
+    \clist_gput_left:Nn \g__groupthm_defined_groups_clist { #1 }
+  }
+\cs_new:Npn \__groupthm_undefine_group:n #1
+  {
+    \tl_log:n { Undefining ~ theorem ~ group ~ '#1' }
+    \cs_undefine:c { __groupthm_use_group__#1:   }
+    \hook_gremove_code:nn { __groupthm/prefix  } { #1 }
+    \hook_gremove_code:nn { __groupthm/suffix } { #1 }
+    \hook_gremove_code:nn { __groupthm/mapname  } { #1 }
+    \hook_gremove_code:nn { __groupthm/thmtools } { #1 }
+    \clist_gremove_all:Nn  \g__groupthm_defined_groups_clist { #1 }
+    \cs_undefine:c { g__groupthm_parents_group__#1__clist }
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { ?? }
+      \g__groupthm_defined_groups_clist
+      { unrelated }
+      { #1 }
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { __groupthm/prefix }
+      \g__groupthm_defined_groups_clist
+      { unrelated }
+      { #1 }
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { __groupthm/suffix }
+      \g__groupthm_defined_groups_clist
+      { unrelated }
+      { #1 }
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { __groupthm/mapname }
+      \g__groupthm_defined_groups_clist
+      { unrelated }
+      { #1 }
+    \__groupthm_hook_gset_rule_foreach:nNnn
+      { __groupthm/thmtools }
+      \g__groupthm_defined_groups_clist
+      { unrelated }
+      { #1 }
+    \__groupthm_remove_from_group_ordering:n { #1 }
+  }
+\cs_new:Npn \__groupthm_define:nnnNNNn #1 #2 #3 #4 #5 #6 #7
+  {
+    \bool_if:nT
+      {
+        \str_if_eq_p:nn { #1 } { new }
+        &&
+        \cs_if_exist_p:N #4
+      }
+      {
+        \tl_log:n { Wrong ~ 'new' ~ definition ~ of ~ #2 ~ '#3' ~ detected. }
+        \msg_error:nnnnn { groupthm } { wrong ~ definition }
+          { #2 } { #3 } { already }
+      }
+    \bool_if:nT
+      {
+        \str_if_eq_p:nn { #1 } { renew }
+        &&
+        ! \cs_if_exist_p:N #4
+      }
+      {
+        \tl_log:n { Wrong ~ 'renew' ~ definition ~ of ~ #2 ~ '#3' ~ detected. }
+        \msg_error:nnnnn { groupthm } { wrong ~ definition }
+          { #2 } { #3 } { not }
+      }
+    \bool_if:nT
+      {
+        (
+          \str_if_eq_p:nn { #1 } { declare } ||
+          \str_if_eq_p:nn { #1 } { renew }
+        ) &&
+        \cs_if_exist_p:N #4
+      }
+      {
+        \tl_log:n { Removing ~ definition ~ of ~ #2 ~ '#3'. }
+        \tl_log:n { Declarator ~ was ~ #1. }
+        #5 { #3 }
+      }
+    \bool_if:nTF
+      {
+        \cs_if_exist_p:N #4
+        &&
+        \str_if_eq_p:nn { #1 } { provide }
+      }
+      {
+        \tl_log:n { Providing ~ #2 ~ '#3' ~ skipped: ~ '#3' ~ already ~ defined. }
+      }
+      {
+        \tl_log:n { Defining ~ #2 ~ '#3'. }
+        #6 #7
+      }
+  }
+\cs_generate_variant:Nn \__groupthm_define:nnnNNNn { n n n c N N n }
+\cs_new:Npn \__groupthm_define_multiple:nnnNNnn #1 #2 #3 #4 #5 #6 #7
+  {
+    \cs_set:Npn \__groupthm_map_aux:n ##1
+      {
+        \cs_new:cn { #6 }
+          {
+            \__groupthm_lazy:n
+              {
+                \__groupthm_define:nnncNNn
+                  { ##1 }
+                  { #2 }
+                  { ####1 }
+                  { #3 }
+                  #4
+                  #5
+                  { #7 }
+              }
+          }
+      }
+    \clist_map_function:nN { #1 } \__groupthm_map_aux:n
+  }
+\__groupthm_define_multiple:nnnNNnn
+  { new, renew, provide, declare }
+  { theorem group }
+  { __groupthm_use_group__##1: }
+  \__groupthm_undefine_group:n
+  \__groupthm_define_group:nnnnn
+  { groupthm_#1_group:nnnnn }
+  { { ##1 } { ##2 } { ##3 } { ##4 } { ##5 } }
+\cs_generate_variant:Nn \groupthm_new_group:nnnnn     { n V V V V }
+\cs_generate_variant:Nn \groupthm_renew_group:nnnnn   { n V V V V }
+\cs_generate_variant:Nn \groupthm_provide_group:nnnnn { n V V V V }
+\cs_generate_variant:Nn \groupthm_declare_group:nnnnn { n V V V V }
+\cs_new:Npn \__groupthm_wrap_multiple:nnn #1 #2 #3
+  {
+    \cs_set:Npn \__groupthm_map_aux:n ##1
+      {
+        \cs_new:cn { #2 }
+          {
+            #3
+          }
+      }
+    \clist_map_function:nN { #1 } \__groupthm_map_aux:n
+  }
+\__groupthm_wrap_multiple:nnn
+  { new, renew, provide, declare }
+  { groupthm_#1_group:nn }
+  {
+    \__groupthm_set_normalized_keys:nnn { ##1 } { theorem ~ group } { ##2 }
+    \use:c { groupthm_#1_group:nVVVV }
+      { ##2 }
+      \l__groupthm_prefix_tl
+      \l__groupthm_suffix_tl
+      \l__groupthm_mapname_clist
+      \l__groupthm_thmtools_clist
+  }
+\cs_generate_variant:Nn \groupthm_new_group:nn { n x }
+\cs_new:Npn \__groupthm_new_document_command:Nnn #1 #2 #3
+  {
+    \NewDocumentCommand { #1 } { #2 } { #3 }
+  }
+\cs_generate_variant:Nn \__groupthm_new_document_command:Nnn { c n n }
+\cs_new:Npn \__groupthm_wrap_multiple_document:nnnn #1 #2 #3 #4
+  {
+    \cs_set:Npn \__groupthm_map_aux:n ##1
+      {
+        \cs_set:Nn \__groupthm_Declarator: { \text_titlecase_first:n { ##1 } }
+        \__groupthm_new_document_command:cnn { #2 } { #3 } { #4 }
+      }
+    \clist_map_function:nN { #1 } \__groupthm_map_aux:n
+  }
+\__groupthm_wrap_multiple_document:nnnn
+  { new, renew, provide, declare }
+  { \__groupthm_Declarator: TheoremGroup }
+  { O{} m }
+  {
+    \__groupthm_lazy:n
+      {
+        \use:c { groupthm_#1 _group:nn } { ##1 } { ##2 }
+      }
+  }
+\cs_new:Npn \groupthm_declare_group_rule:nnnn #1 #2 #3 #4
+  {
+    \__groupthm_lazy:n
+      {
+        \str_set:Nx \l_tmpa_str { \tl_trim_spaces:n { #3 } }
+        \str_if_eq:VnT \l_tmpa_str { higher }
+          {
+            \str_set:Nn \l_tmpa_str { after }
+          }
+        \str_if_eq:VnT \l_tmpa_str { lower }
+          {
+            \str_set:Nn \l_tmpa_str { before }
+          }
+        \str_if_eq:nnTF { #1 } { ?? }
+          {
+            \hook_gset_rule:nnVn {??} {#2} \l_tmpa_str {#4}
+          }
+          {
+            \hook_gset_rule:nnVn { __groupthm / #1 } {#2} \l_tmpa_str {#4}
+          }
+      }
+  }
+\cs_generate_variant:Nn \groupthm_declare_group_rule:nnnn { n n n x }
+\NewDocumentCommand { \DeclareTheoremGroupRule } { O{??} m m m }
+  {
+    \__groupthm_lazy:n
+      {
+        \groupthm_declare_group_rule:nnnn {#1} {#2} {#3} {#4}
+      }
+  }
+\cs_new:Npn \groupthm_add_parent:nn #1 #2
+  {
+    \__groupthm_lazy:n
+      {
+        \__groupthm_ensure_group_exists:n { #1 }
+        \__groupthm_ensure_group_exists:n { #2 }
+        \clist_gput_left:cn { g__groupthm_parents_group__#1__clist } { #2 }
+      }
+  }
+\cs_generate_variant:Nn \groupthm_add_parent:nn { n x }
+\NewDocumentCommand { \AddTheoremGroupParent } { m m }
+  {
+    \__groupthmlazy:n
+      {
+        \groupthm_add_parent:nn { #1 } { #2 }
+      }
+  }
+\cs_new:Npn \__groupthm_push_tmpa_seq:n #1
+  {
+    \seq_push:Nn \l_tmpa_seq { #1 }
+  }
+\cs_new:Npn \__groupthm_flatten_groups_hierarchy:nN #1 #2
+  {
+    \clist_clear:N #2
+    \seq_set_from_clist:Nn \l_tmpa_seq { #1 }
+    \bool_until_do:nn
+      {
+        \seq_if_empty_p:N \l_tmpa_seq
+      }
+      {
+        \seq_pop:NN \l_tmpa_seq \l_tmpa_tl
+        \__groupthm_ensure_group_exists:V \l_tmpa_tl
+        \clist_if_in:NVF #2 \l_tmpa_tl
+          {
+            \clist_put_left:NV #2 \l_tmpa_tl
+            \clist_map_function:cN
+              { g__groupthm_parents_group__ \l_tmpa_tl __clist }
+              \__groupthm_push_tmpa_seq:n
+          }
+      }
+  }
+\cs_new:Npn \groupthm_append_to_group:nn #1 #2
+  {
+    \__groupthm_lazy:n
+      {
+        \groupthm_new_group:nx  { #1 } { __append__ \int_use:N \g__groupthm_append_groups_int }
+        \groupthm_add_parent:nx { #2 } { __append__ \int_use:N \g__groupthm_append_groups_int }
+        \groupthm_declare_group_rule:nnnx
+          { ?? } { #2 } { before } { __append__ \int_use:N \g__groupthm_append_groups_int }
+        \int_gincr:N \g__groupthm_append_groups_int
+      }
+  }
+\NewDocumentCommand { \AppendToTheoremGroup } { O{} m }
+  {
+    \__groupthmlazy:n
+      {
+        \groupthm_append_to_group:nn { #1 } { #2 }
+      }
+  }
+\clist_new:N  \l__powerset_copied_clist
+\seq_new:N    \l__powerset_saved_seq
+\cs_generate_variant:Nn \clist_remove_all:Nn { N V }
+\cs_new:Npn \__powerset_clist_foreach_aux:Nn #1 #2
+  {
+    \clist_if_empty:NTF \l__powerset_copied_clist
+      {
+        #2
+      }
+      {
+        \clist_get:NN \l__powerset_copied_clist \l_tmpa_tl
+        \seq_push:NV  \l__powerset_saved_seq \l_tmpa_tl
+        \clist_pop:NN \l__powerset_copied_clist { \l_tmpa_tl }
+        \__powerset_clist_foreach_aux:Nn #1 {#2}
+        \seq_get:NN \l__powerset_saved_seq \l_tmpa_tl
+        \clist_put_left:NV #1 \l_tmpa_tl
+        \__powerset_clist_foreach_aux:Nn #1 {#2}
+        \seq_get:NN \l__powerset_saved_seq \l_tmpa_tl
+        \clist_remove_all:NV #1 \l_tmpa_tl
+        \clist_push:NV \l__powerset_copied_clist \l_tmpa_tl
+        \seq_pop:NN \l__powerset_saved_seq \l_tmpa_tl
+      }
+  }
+\cs_new:Npn \powerset_clist_foreach:Nn #1 #2
+  {
+    \clist_set_eq:NN \l__powerset_copied_clist #1
+    \clist_clear:N #1
+    \clist_remove_duplicates:N \l__powerset_copied_clist
+    \__powerset_clist_foreach_aux:Nn #1 {#2}
+    \clist_set_eq:NN #1 \l__powerset_copied_clist
+  }
+\cs_new:Npn \__groupthm_ensure_group_exists:n #1
+  {
+    \cs_if_exist:cF { __groupthm_use_group__#1: }
+    {
+      \msg_error:nnn { groupthm } { unknown ~ group } { #1 }
+    }
+  }
+\cs_generate_variant:Nn \__groupthm_ensure_group_exists:n { V }
+\cs_new:Npn \__groupthm_use_group:n #1
+  {
+    \__groupthm_ensure_group_exists:n { #1 }
+    \use:c { __groupthm_use_group__#1: }
+  }
+\cs_new:Npn \__groupthm_use_function_on_name:n #1
+  {
+    \tl_set:Nx \l__groupthm_name_tl
+      {
+        #1 { \tl_use:N \l__groupthm_name_tl }
+      }
+  }
+\cs_new:Npn \__groupthm_define_theorem:nnnn #1 #2 #3 #4
+  {
+    \tl_clear:N     \l__groupthm_prefix_tl
+    \tl_set:Nn      \l__groupthm_name_tl        { #3 }
+    \tl_clear:N     \l__groupthm_suffix_tl
+    \clist_clear:N  \l__groupthm_mapname_clist
+    \clist_clear:N  \l__groupthm_thmtools_clist
+    \hook_gremove_code:nn { __groupthm/prefix  }{*}
+    \hook_gremove_code:nn { __groupthm/suffix }{*}
+    \hook_gremove_code:nn { __groupthm/mapname  }{*}
+    \hook_gremove_code:nn { __groupthm/thmtools }{*}
+    \__groupthm_flatten_groups_hierarchy:nN { #2, all } \l__groupthm_group_clist
+    \clist_map_function:NN \l__groupthm_group_clist \__groupthm_use_group:n
+    \tl_log:x { Flattened ~ groups ~ '#2' ~ to ~ '\clist_use:Nn \l__groupthm_group_clist {,}' ~ when ~
+                defining ~ theorem ~ '#1' }
+    \hook_use:n { __groupthm/prefix }
+    \hook_use:n { __groupthm/suffix }
+    \hook_use:n { __groupthm/mapname }
+    \hook_use:n { __groupthm/thmtools }
+    \clist_map_function:NN \l__groupthm_mapname_clist \map_use_on_name:n
+    \tl_set:Nn       \l_tmpa_tl { name = }
+    \tl_put_right:NV \l_tmpa_tl \l__groupthm_prefix_tl
+    \tl_put_right:NV \l_tmpa_tl \l__groupthm_name_tl
+    \tl_put_right:NV \l_tmpa_tl \l__groupthm_suffix_tl
+    \clist_put_right:NV \l__groupthm_thmtools_clist \l_tmpa_tl
+    \clist_put_right:Nn \l__groupthm_thmtools_clist { #4 }
+    \__groupthm_thmtools_declare_theorem:Vn
+      \l__groupthm_thmtools_clist
+      { #1 }
+  }
+\__groupthm_define_multiple:nnnNNnn
+  { new, provide }
+  { grouped ~ theorem }
+  { ##1 }
+  \__groupthm_error:
+  \__groupthm_define_theorem:nnnn
+  { groupthm_#1_theorem:nnnn }
+  { { ##1 } { ##2 } { ##3 } { ##4 } }
+\cs_generate_variant:Nn \groupthm_new_theorem:nnnn     { n V V V }
+\cs_generate_variant:Nn \groupthm_provide_theorem:nnnn { n V V V }
+\cs_generate_variant:Nn \groupthm_new_theorem:nnnn     { x V n n }
+\cs_generate_variant:Nn \groupthm_provide_theorem:nnnn { x V n n }
+\__groupthm_wrap_multiple:nnn
+  { new, provide }
+  { groupthm_#1_theorem:nnn }
+  {
+    \__groupthm_lazy:n
+      {
+        \__groupthm_set_normalized_keys:nnn { ##1 } { grouped ~ theorem } { ##2 }
+        \bool_if:nT { ##3 }
+          {
+            \clist_put_left:Nn \l__groupthm_group_clist { unnumbered }
+          }
+        \use:c { groupthm_#1_theorem:nVVV }
+          { ##2 }
+          \l__groupthm_group_clist
+          \l__groupthm_name_tl
+          \l__groupthm_thmtools_clist
+        \bool_if:NT \l__groupthm_starred_version_bool
+          {
+            \clist_put_left:Nn \l__groupthm_group_clist { starred }
+            \use:c { groupthm_#1_theorem:nVVV }
+              { ##2* }
+              \l__groupthm_group_clist
+              \l__groupthm_name_tl
+              \l__groupthm_thmtools_clist
+          }
+      }
+  }
+\__groupthm_wrap_multiple_document:nnnn
+  { new, provide }
+  { \__groupthm_Declarator: GroupedTheorem }
+  { s O{} m }
+  {
+    \__groupthm_lazy:n
+      {
+        \use:c { groupthm_#1_theorem:nnn }
+        { ##2 }
+        { ##3 }
+        { ##1 }
+      }
+  }
+\cs_new:Npn \__groupthm_define_family:nnnnn #1 #2 #3 #4 #5
+  {
+    \clist_set:Nn \l_tmpa_clist { #2 }
+    \powerset_clist_foreach:Nn \l_tmpa_clist
+      {
+        \clist_set_eq:NN \l__groupthm_group_clist \l_tmpa_clist
+        \clist_put_right:Nn \l__groupthm_group_clist { #5 }
+        \__groupthm_sort_group_names:
+        \use:c{groupthm_new_theorem:xVnn}
+          {__#1__groups_\clist_use:Nn \l__groupthm_group_clist {_}}
+          \l__groupthm_group_clist
+          { #3 }
+          { #4 }
+      }
+    \clist_new:c { __groupthm_family__#1__group_clist }
+    \clist_set_eq:cN {__groupthm_family__#1__group_clist } \l_tmpa_clist
+    \clist_new:c { __groupthm_family__#1__always_group_clist }
+    \clist_set:cn {__groupthm_family__#1__always_group_clist } { #5 }
+  }
+\__groupthm_define_multiple:nnnNNnn
+  { new, provide }
+  { theorem ~ family }
+  { __groupthm_family__##1__group_clist }
+  \__groupthm_error:
+  \__groupthm_define_family:nnnnn
+  { groupthm_#1_family:nnnnn }
+  { { ##1 } { ##2 } { ##3 } { ##4 } { ##5 }}
+\cs_generate_variant:Nn \groupthm_new_family:nnnnn     { n V V V V }
+\cs_generate_variant:Nn \groupthm_provide_family:nnnnn { n V V V V }
+\__groupthm_wrap_multiple:nnn
+{ new, provide }
+{ groupthm_#1_family:nnn }
+{
+  \__groupthm_lazy:n
+    {
+      \__groupthm_set_normalized_keys:nnn { ##1 } { theorem ~ family } { ##2 }
+      \bool_if:nTF { ##3}
+        {
+          \clist_set:Nn \l_tmpa_clist { unnumbered }
+        }
+        {
+          \clist_clear:N \l_tmpa_clist
+        }
+      \bool_if:NT \l__groupthm_starred_version_bool
+        {
+          \clist_put_left:Nn \l__groupthm_group_clist { starred }
+        }
+      \use:c { groupthm_#1_family:nVVVV }
+        { ##2 }
+        \l__groupthm_group_clist
+        \l__groupthm_name_tl
+        \l__groupthm_thmtools_clist
+        \l_tmpa_clist
+    }
+}
+\__groupthm_wrap_multiple_document:nnnn
+  { new, provide }
+  { \__groupthm_Declarator: GroupedTheoremFamily }
+  { s O{} m }
+  {
+    \__groupthm_lazy:n
+      {
+        \use:c { groupthm_#1_family:nnn }
+          { ##2 }
+          { ##3 }
+         { ##1 }
+      }
+  }
+\cs_new:Npn \groupthm_add_theorem_to_group:n #1
+  {
+    \__groupthm_lazy:n
+      {
+        \bool_if:NTF \l__groupthm_in_family_options_environment_bool
+          {
+            \clist_put_left:Nn \l__groupthm_group_clist { #1 }
+          }
+          {
+            \msg_error:nn { groupthm } { misuse ~ add ~ theorem ~ to ~ group }
+          }
+      }
+  }
+  \NewDocumentCommand { \AddTheoremToGroup } { m }
+    {
+      \groupthm_add_theorem_to_group:n { #1 }
+    }
+\cs_new:Npn \__groupthm_define_family_options:nnnn #1 #2 #3 #4
+  {
+    \DeclareDocumentEnvironment
+      { #1 }
+      { #2 }
+      {
+        \clist_clear:N \l__groupthm_group_clist
+        \bool_set_true:N \l__groupthm_in_family_options_environment_bool
+        #3
+        \bool_set_false:N \l__groupthm_in_family_options_environment_bool
+        \clist_put_right:Nn \l__groupthm_group_clist { #4 }
+        \__groupthm_sort_group_names:
+        \cs_if_exist:cTF { __#1__groups_ \clist_use:Nn \l__groupthm_group_clist { _ } }
+        {
+          \begin { __#1__groups_ \clist_use:Nn \l__groupthm_group_clist { _ } }
+        }
+        {
+          \msg_error:nnxx { groupthm } { undefined ~ theorem ~ variant }
+            { #1 }
+            { \clist_use:Nnnn \l__groupthm_group_clist { ~ and ~ } {, ~} { , ~ and ~ } }
+        }
+      }
+      {
+        \clist_clear:N \l__groupthm_group_clist
+        \bool_set_true:N \l__groupthm_in_family_options_environment_bool
+        #3
+        \bool_set_false:N \l__groupthm_in_family_options_environment_bool
+        \clist_put_right:Nn \l__groupthm_group_clist { #4 }
+        \__groupthm_sort_group_names:
+        \end { __#1__groups_ \clist_use:Nn \l__groupthm_group_clist { _ } }
+      }
+    \__groupthm_cache_slow:n
+      {
+        \csname __groupthm_define_family_options:nnnn \endcsname { #1 } { #2 } { #3 } { #4 }
+      }
+  }
+\__groupthm_define_multiple:nnnNNnn
+  { new, renew, provide, declare }
+  { theorem ~ family ~ options }
+  { ##1 }
+  \use_none:n
+  \__groupthm_define_family_options:nnnn
+  { groupthm_#1_family_options:nnnn }
+  { { ##1 } { ##2 } { ##3 } { ##4 } }
+\cs_generate_variant:Nn \groupthm_new_family_options:nnnn { n n n V }
+\cs_generate_variant:Nn \groupthm_renew_family_options:nnnn { n n n V }
+\cs_generate_variant:Nn \groupthm_provide_family_options:nnnn { n n n V }
+\cs_generate_variant:Nn \groupthm_declare_family_options:nnnn { n n n V }
+\__groupthm_wrap_multiple_document:nnnn
+  { new, renew, provide, declare }
+  { \__groupthm_Declarator: GroupedTheoremFamilyOptions }
+  { s O{} m m m }
+  {
+    \__groupthm_lazy:n
+      {
+        \keys_set:nn { groupthm / theorem ~ family ~ options } { starred ~ version }
+        \keys_set:nn { groupthm / theorem ~ family ~ options } { ##2 }
+        \bool_if:nTF { ##1 }
+          {
+            \clist_set:Nn \l_tmpa_clist { unnumbered }
+          }
+          {
+            \clist_clear:N \l_tmpa_clist
+          }
+       \use:c { groupthm_#1_family_options:nnnV }
+         { ##3 }
+         { ##4 }
+         { ##5 }
+         \l_tmpa_clist
+       \bool_if:NT \l__groupthm_starred_version_bool
+         {
+           \use:c { groupthm_#1_family_options:nnnV }
+             { ##3* }
+             { ##4 }
+             {
+               ##5
+               \groupthm_add_theorem_to_group:n { starred }
+             }
+             \l_tmpa_clist
+         }
+     }
+  }
+\bool_if:NTF \g__groupthm_cache_bool
+  {
+    \cs_new:Npn \__groupthm_write_auxout:n
+      {
+        \iow_now:cn { @auxout }
+      }
+    \cs_generate_variant:Nn \__groupthm_write_auxout:n { x }
+    \cs_new:Npn \__groupthm_dump_auxfile:n
+      {
+        \clist_gput_right:Nn \g__groupthm_dump_auxfile_clist
+      }
+    \cs_generate_variant:Nn \__groupthm_dump_auxfile:n { x }
+
+    \cs_new:Npn \__groupthm_cache_auxfile:n
+      {
+        \clist_gput_right:Nn \g__groupthm_dump_cache_clist
+      }
+    \cs_generate_variant:Nn \__groupthm_cache_auxfile:n { V }
+
+    \hook_gput_code:nnn { enddocument } { groupthm }
+      {
+          \clist_map_function:NN \g__groupthm_dump_auxfile_clist
+            \__groupthm_write_auxout:n
+          \__groupthm_write_auxout:n
+            {
+              \csname tl_gput_right:cn \endcsname
+                {
+                  g__groupthm_lazy_auxfile_tl
+                }
+            }
+          \__groupthm_write_auxout:x { \str_use:N \c_left_brace_str }
+          \clist_map_function:NN \g__groupthm_dump_cache_clist
+            \__groupthm_write_auxout:n
+          \__groupthm_write_auxout:x { \str_use:N \c_right_brace_str }
+    }
+
+    \__groupthm_dump_auxfile:x
+      {
+        \ExplSyntaxOn
+        \int_gset:Nn \exp_not:N \g__groupthm_cache_version_aux_int
+          {
+            \int_use:N \g__groupthm_cache_version_document_int
+          }
+        \ExplSyntaxOff
+      }
+    \cs_new:Npn \__groupthm_lazy:n
+      {
+        \tl_gput_right:Nn \g__groupthm_lazy_document_tl
+      }
+    \cs_set_eq:NN \__groupthm_cache:n \__groupthm_cache_auxfile:n
+  \cs_new:Npn \__groupthm_cache_slow:n #1
+    {
+      \tl_set:Nn \l_tmpa_tl
+        {
+          { #1 }
+        }
+      \regex_replace_all:nnN { \cP\# } { \cO\# } \l_tmpa_tl
+      \__groupthm_cache_auxfile:V \l_tmpa_tl
+    }
+    \hook_gput_code:nnn { begindocument } { groupthm }
+      {
+        \cs_set_eq:NN \__groupthm_lazy:n \use:n
+        \int_compare:nNnTF
+          \g__groupthm_cache_version_aux_int < \g__groupthm_cache_version_document_int
+          {
+            \tl_use:N \g__groupthm_lazy_document_tl
+          }
+          {
+                \tl_use:N \g__groupthm_lazy_auxfile_tl
+          }
+      }
+  }
+  {
+    \cs_set_eq:NN \__groupthm_cache:n \use_none:n
+    \cs_set_eq:NN \__groupthm_cache_slow:n \use_none:n
+    \cs_set_eq:NN \__groupthm_lazy:n \use:n
+  }
+\groupthm_new_group:nnnnn { all        } { } { } { } {               }
+\groupthm_new_group:nnnnn { starred    } { } { } { } { numbered = no }
+\groupthm_new_group:nnnnn { unnumbered } { } { } { } { numbered = no }
+\endinput
+%%
+%% End of file `groupthm.sty'.

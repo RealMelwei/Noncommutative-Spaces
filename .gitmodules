@@ -1,0 +1,3 @@
+[submodule "latex-packages-build"]
+	path = latex-packages-build
+	url = ../../latex/latex-packages-build

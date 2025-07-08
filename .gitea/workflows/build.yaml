@@ -1,0 +1,19 @@
+name: Compile exercises
+on: [push]
+
+jobs:
+  compile:
+    runs-on: latex-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Compile
+        run: make pdf
+      - name: Prepare pages
+        run: |
+          mkdir -p public
+          mv ./build/*.pdf public/
+      - name: Deploy to pages
+        uses: actions/pages@v1
