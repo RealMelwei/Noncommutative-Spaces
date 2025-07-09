@@ -25,7 +25,7 @@
 \let\sp\relax
 \DeclareSimpleMathOperator{sp}
 \DeclareSimpleMathOperator{mSpec}
-
+\DeclareSimpleMathOperator{ev}
 \begin{document}
 	\maketitle
 	
@@ -158,7 +158,7 @@
 	\begin{definition}
 		\leavevmode
 		\begin{itemize}
-			\item A \textit{character} on $A$ is a (\todo{non-zero? Continuous?}) algebra homomorphism $\chi:A\to\C$.
+			\item A \textit{character} on $A$ is a non-zero $\C$-algebra homomorphism $\chi:A\to\C$.
 			\item The \textit{spectrum} of $A$ is
 			\begin{align*}
 				\hat{A}\coloneqq \left\{\chi:A\to \C\mid\chi\text{ character}\right\}
@@ -180,11 +180,15 @@
 		\end{itemize}
 	\end{example}
 	\begin{fact}\label{Fact: Maximal ideals in commutative Banach algebra}
-		An ideal $m\subseteq A$ is maximal if and only if it is closed and has codimension 1.
+		For a commutative Banach algebra $A$, the following hold:
+		\begin{itemize}
+			\item An ideal $m\subseteq A$ is maximal if and only if it has codimension 1.
+			\item Maximal ideals are closed.
+		\end{itemize}
 	\end{fact}
 
 	\begin{proposition}\label{Prop: Spectrum is maximal ideals}
-		The map
+		If additionally $A$ is unital, the map
 		\begin{align*}
 			\hat{A}&\to \mSpec(A)\\
 			\chi &\mapsto \ker \chi,
@@ -196,13 +200,51 @@
 	
 	Let $m\in\mSpec(A)$. $m$ is closed by Fact \ref{Fact: Maximal ideals in commutative Banach algebra}. Thus, $A/m$ is a Banach algebra by Lemma \ref{Lemma: Quotient Banach algebra}, and a field by maximality of $m$, hence we have $A/m\cong \C$ by Corollary \ref{Cor: Gelfand-Mazur}. But then, the quotient map $A\to A/m\cong \C$ is a character with kernel $m$, hence surjectivity.
 	
-	For injectivity, let $\chi,\chi'$ be characters with $\ker \chi = \ker \chi'\eqcolon m$. Note that $A/m\cong \C$ by the argument above and fix such an isomorphism. Especially, both $\chi$ and $\chi'$ factor as a composition $A\to A/m\cong \C \to \C$, where the first map is the quotient map and the second map is the fixed isomorphism. But now, as any homomorphism of $\C$-algebras from $\C$ to $\C$ is the identity, the composition above is unique and $\chi=\chi'$.
+	For injectivity, let $\chi,\chi'$ be characters with $\ker \chi = \ker \chi'\eqcolon m$. Note that $A/m\cong \C$ by the argument above and fix such an isomorphism. Especially, both $\chi$ and $\chi'$ factor as a composition $A\to A/m\cong \C \to \C$, where the first map is the quotient map and the second map is the fixed isomorphism. But now, as any non-zero homomorphism of $\C$-algebras from $\C$ to $\C$ is the identity\footnote{To see this, first note that any such homomorphism $\phi$ is already unital. Then, $\phi(\lambda)=\lambda\phi(1)=\lambda$ for all $\lambda\in \C$.}, the composition above is unique and $\chi=\chi'$.
 \end{proof}
 \weaktodo{Something about the topology on the spectrum}
-\begin{lemma}
+\begin{lemma}\label{Lemma: Spectrum subset of unit ball in dual space}
 	For $\chi \in \hat{A}$, we have $\norm{\chi}\leq 1$. In particular, $\hat{A}\subseteq A^*\coloneqq \cB(A,\C)$, where $\cB(V,W)$ denotes the Banach space of bounded linear maps $V\to W$, equipped with the operator norm.
 \end{lemma}
 \begin{proof}
-	Let $\chi\in \hat{A}$. By the proof of Proposition \ref{Prop: Spectrum is maximal ideals}, $\chi$ is already isomorphic to the quotient map $p:A\to A/(\ker\chi)$. But that quotient map satisfies $\norm{p(a)}=\norm{a+\ker\chi}\leq \norm{a}$ for all $a\in A$, hence so does $\chi$.
+	Suppose $A$ is unital and let $\chi\in \hat{A}$. By the proof of Proposition \ref{Prop: Spectrum is maximal ideals}, $\chi$ is already isomorphic to the quotient map $p:A\to A/(\ker\chi)$. But that quotient map satisfies $\norm{p(a)}=\norm{a+\ker\chi}\leq \norm{a}$ for all $a\in A$, hence so does $\chi$.\\
+	Now, consider the case where $A$ is not unital. We can define
+	\begin{align*}
+		\tilde{\chi}:\tilde{A}&\to \C\\
+		(a,\lambda)&\mapsto \chi(a)+\lambda
+	\end{align*}
+	It is easy to see that this is again an algebra homomorphism. But then, by the unital case:
+	\begin{align*}
+		\abs{\chi(a)}=\abs{\tilde{\chi}((a,0))}\leq \norm{(a,0)}=\norm{a}.
+	\end{align*}
+	Hence, $\norm{\chi}\leq 1$ and especially $\chi$ is continuous.
+\end{proof}
+
+\begin{definition}
+	We equip $A^*=\cB(A,\C)$ with the \textit{weak-$*$} topology: The coarsest topology such that for all $a\in A$
+	\begin{align*}
+		\ev_a:A^*&\to \C\\
+		\phi &\mapsto \phi(a)
+	\end{align*}
+	is continuous. In other words, $\phi_n\to \phi$ in $A^*$ if and only if $\phi_n(a)\to \phi(a)$ for all $a\in A$.
+	We further equip $\hat{A}\subseteq A^*$ with the subspace topology.
+\end{definition}
+\begin{lemma}\label{Lemma: Dual space Hausdorff}
+	$A^*$ is Hausdorff. In particular, so is $\hat{A}$.
+\end{lemma}
+\begin{proof}
+	Let $\phi,\phi'\in A^*$. Then there is some $a\in A$ with $\phi(a)\neq \phi'(a)$. Now, picking disjoint opens $U, V\subseteq \C$ with $\phi(a)\in U$, $\phi'(a)\in V$, their preimages form disjoint opens $\ev_a\inv(U), \ev_a\inv(V)\subseteq A^*$ with $\phi\in \ev_a\inv(U)$ and $\phi'\in \ev_a\inv(V)$.
+\end{proof}
+\begin{theorem}\label{Thm: Banach-Alaoglu}[Banach-Alaoglu]
+	The closed unit ball $B^*\coloneqq \{\phi\in A^*\mid \norm{\phi}\leq 1\}$ is compact.
+\end{theorem}
+\begin{proof}
+	Omitted.
+\end{proof}
+\begin{proposition}
+	$\hat{A}$ is locally compact. If $A$ is unital, $\hat{A}$ is compact.
+\end{proposition}
+\begin{proof}
+	By Lemma \ref{Lemma: Spectrum subset of unit ball in dual space}, $\hat{A}$ is a subspace of the closed unit ball $B^*\coloneqq \{\phi\in A^*\mid \norm{\phi}\leq 1\}$, which is compact by Theorem \ref{Thm: Banach-Alaoglu} and Hausdorff by Lemma \ref{Lemma: Dual space Hausdorff}, hence for the first part of the statement it suffices to show that $\hat{A}\cup \{0\}\subseteq B^*$ is closed. Pick a sequence $(\phi_n)_{n\in \N}\in (\hat{A}\cup\{0\})^{\N}$.
 \end{proof}
 \end{document}
