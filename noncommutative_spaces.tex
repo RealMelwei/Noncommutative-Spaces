@@ -165,6 +165,9 @@
 			\end{align*}
 		\end{itemize}
 	\end{definition}
+	\begin{remark}\label{Rmk: Characters unital}
+		If $A$ is unital, for an algebra homomorphism $\chi:A\to\C$ to be non-zero is equivalent to being unital, i.e. satisfying $\chi(1)=1$. This is because $\chi(a)=\chi(1)\chi(a)$ for all $a\in A$.
+	\end{remark}
 	\begin{example}
 		As we will see in \todo{reference}, we have:
 		\begin{itemize}
@@ -235,7 +238,7 @@
 \begin{proof}
 	Let $\phi,\phi'\in A^*$. Then there is some $a\in A$ with $\phi(a)\neq \phi'(a)$. Now, picking disjoint opens $U, V\subseteq \C$ with $\phi(a)\in U$, $\phi'(a)\in V$, their preimages form disjoint opens $\ev_a\inv(U), \ev_a\inv(V)\subseteq A^*$ with $\phi\in \ev_a\inv(U)$ and $\phi'\in \ev_a\inv(V)$.
 \end{proof}
-\begin{theorem}\label{Thm: Banach-Alaoglu}[Banach-Alaoglu]
+\begin{theorem}[Banach-Alaoglu]\label{Thm: Banach-Alaoglu}
 	The closed unit ball $B^*\coloneqq \{\phi\in A^*\mid \norm{\phi}\leq 1\}$ is compact.
 \end{theorem}
 \begin{proof}
@@ -245,6 +248,63 @@
 	$\hat{A}$ is locally compact. If $A$ is unital, $\hat{A}$ is compact.
 \end{proposition}
 \begin{proof}
-	By Lemma \ref{Lemma: Spectrum subset of unit ball in dual space}, $\hat{A}$ is a subspace of the closed unit ball $B^*\coloneqq \{\phi\in A^*\mid \norm{\phi}\leq 1\}$, which is compact by Theorem \ref{Thm: Banach-Alaoglu} and Hausdorff by Lemma \ref{Lemma: Dual space Hausdorff}, hence for the first part of the statement it suffices to show that $\hat{A}\cup \{0\}\subseteq B^*$ is closed. Pick a sequence $(\phi_n)_{n\in \N}\in (\hat{A}\cup\{0\})^{\N}$.
+	By Lemma \ref{Lemma: Spectrum subset of unit ball in dual space}, $\hat{A}$ is a subspace of the closed unit ball $B^*\coloneqq \{\phi\in A^*\mid \norm{\phi}\leq 1\}$, which is compact by Theorem \ref{Thm: Banach-Alaoglu} and Hausdorff by Lemma \ref{Lemma: Dual space Hausdorff}, hence for the first part of the statement it suffices to show that $\hat{A}\cup \{0\}\subseteq B^*$ is closed. Pick a sequence $(\phi_n)_{n\in \N}\in (\hat{A}\cup\{0\})^{\N}$ converging to $\phi\in B^*$. Then
+	\begin{align*}
+		\phi(ab)=\lim_{n\to\infty}\phi_n(ab)=\lim_{n\to\infty}\phi_n(a)\lim_{n\to\infty}\phi_n(b)=\phi(a)\phi(b)
+	\end{align*}
+	and analogous arguments for $\C$-linearity work, hence $\phi$ is again an algebra homomorphism and hence $\phi\in \hat{A}$. If $A$ is unital and all $\phi_n$ are non-zero, then $\phi_n(1)=1$ for all $n\in\N$ by Remark \ref{Rmk: Characters unital} and especially $\phi(1)=1$, so $\phi$ is non-zero as well - hence in that case, $\hat{A}$ is already compact.
 \end{proof}
+
+\subsection{The Gelfand transform}
+\begin{definition}
+	We define the \textit{Gelfand transform} to be the map
+	\begin{align*}
+		\Gamma\colon A&\to \cC_0(\hat{A})\\
+		a&\mapsto (\chi\mapsto \chi(a)).
+	\end{align*}
+\end{definition}
+\begin{remark}
+	This is well defined: $\Gamma(a)$ is bounded as
+	\begin{align*}
+		\abs{\Gamma(a)(\chi)}=\abs{\chi(a)}\leq \norm{\chi}\norm{a}\leq \norm{a}.
+	\end{align*}
+	In other words, $\Gamma(a)\in \cC_b(\hat{A})$. Now, let $\eps>0$ and pick a sequence $(\chi_n)_{n\in\N}$ of elements in $\hat{A}\cup \{0\}$ with $\abs{\chi_n(a)}\leq \eps$ for all $n\in \N$ that converges to an element $\chi\in \hat{A}\cup\{0\}$. Then $\abs{\chi(a)}=\lim_{n\to\infty}\abs{\chi_n(a)}\leq \eps$, hence the set
+	\begin{align*}
+		K_{a,\eps}\coloneqq \{\chi\in \hat{A}\cup \{0\}\mid \abs{\chi(a)}\leq \eps\}
+	\end{align*}
+	is a closed subspace of the compact space $\hat{A}\cup\{0\}$ and thus compact. But further
+	\begin{align*}
+		\Gamma(a)\inv((-\eps,\eps))\subseteq K_{a,\eps},
+	\end{align*}
+	so $\Gamma(a)\in \cC_0(\hat{A})$.
+\end{remark}
+\begin{theorem}
+	$\Gamma$ is a norm-decreasing algebra homomorphism and $\Gamma(A)$ separates points in $\hat{A}$.
+\end{theorem}
+\begin{proof}
+	We have 
+	$$
+	\norm{\Gamma(a)}=\sup_{\chi\in \hat{A}}|\chi(a)|\leq \sup_{\chi\in \hat{A}}\norm{\chi}\norm{a}\leq \norm{a},
+	$$
+	so $\Gamma$ is indeed norm-decreasing. Furthermore,
+	$$
+	\Gamma(ab)=(\chi\mapsto \chi(ab))=(\chi\mapsto \chi(a))(\chi\mapsto\chi(b))=\Gamma(a)\Gamma(b)
+	$$
+	and an analogous argument shows $\C$-linearity, so $\Gamma$ is an algebra homomorphism. Lastly, for $\phi\neq\phi'\in \hat{A}$, there is some $a\in A$ with
+	$$\Gamma(a)(\chi)=\chi(a)\neq \chi'(a)=\Gamma(a)(\chi'),$$
+	hence $\Gamma(A)$ separates points in $\hat{A}$.
+\end{proof}
+\begin{example}
+	We will see in \todo{reference} that for $A=\cC_0(X)$ for a locally compact topological space $X$, the Gelfand transform $\Gamma\colon A\to \cC_0(\hat{A})$ is an isomorphism.
+\end{example}
+\begin{proposition}
+	If $A$ is unital and $a\in A$, we have $\sp(a)=\Im(\Gamma(a))$. If $A$ is not unital, $\widetilde{\sp}(a)=\Im(\Gamma(a))\cup\{0\}$, where $\widetilde{\sp}(a)\coloneqq \sp{((a,0))}$ in $\tilde{A}$.
+\end{proposition}
+\begin{proof}
+	\todo{Think about this}
+\end{proof}
+\begin{corollary}
+	For $A$ unital and $a\in A$ we have $\norm{\Gamma(a)}=r(a)$. In particular, $\ker \Gamma=\{a\in A|r(a)=0\}$.
+\end{corollary}
+\subsection{$C^*$-algebras}
 \end{document}
