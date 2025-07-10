@@ -19,6 +19,7 @@
 \renewcommand{\norm}[1]{\left\lVert #1 \right\rVert}
 \newcommand{\cB}{\mathcal{B}}
 \newcommand{\cC}{\mathcal{C}}
+\newcommand{\cH}{\mathcal{H}}
 \newcommand{\inv}{^{-1}}
 \newcommand{\eps}{\varepsilon}
 \DeclareSimpleMathOperator{const}
@@ -26,6 +27,9 @@
 \DeclareSimpleMathOperator{sp}
 \DeclareSimpleMathOperator{mSpec}
 \DeclareSimpleMathOperator{ev}
+\newcommand{\conj}[1]{\overline{#1}}
+\DeclareMathOperator{\oplow}{op}
+\renewcommand{\op}{^{\oplow}}
 \begin{document}
 	\maketitle
 	
@@ -307,4 +311,63 @@
 	For $A$ unital and $a\in A$ we have $\norm{\Gamma(a)}=r(a)$. In particular, $\ker \Gamma=\{a\in A|r(a)=0\}$.
 \end{corollary}
 \subsection{$C^*$-algebras}
+\begin{definition}
+	An \textit{involution} on a Banach algebra $A$ is a map $(-)^*:A\to A$ such that:
+	\begin{itemize}
+		\item For all $\lambda\in \C, a,b\in A$ we have $(\lambda a+b)^*=\conj{\lambda}a^*+b^*$.
+		\item For $a,b\in A$ we have $(ab)^*=b^*a^*$.
+		\item For all $a\in A$ we have $a^{**}=a$.
+	\end{itemize}
+\end{definition}
+\begin{remark}
+	One can, more generally, define an involution on a (non-unital) ring $R$ as a (non-unital) ring automorphism $(-)^*:R\to R\op$ with $((-)^*)\inv = ((-)^*)\op$, where $R\op$ is the ring with reversed multiplication. For such a ring with involution $R$, an involution on an $R$-algebra $A$ is an involution $(-)^*$ on $A$ making
+	\begin{center}
+		\begin{tikzcd}
+			R\ar[d,"(-)^*"]\ar[r] & A\ar[d,"(-)^*"]\\
+			R\ar[r] & A
+		\end{tikzcd}
+	\end{center}
+	commute. An involution on a Banach algebra is then just an involution of the $\C$-algebra, where the involution on $\C$ is $\conj{(-)}$. This approach works in any category with a $C_2$-action.
+\end{remark}
+\begin{definition}
+	A $C^*$-algebra is a Banach algebra $(A,\norm{.})$ with involution $(-)^*$ such that $\norm{a^*a}=\norm{a}^2$ for all $a\in A$.
+\end{definition}
+\begin{lemma}
+	Let $A$ be a $C^*$-algebra and $a\in A$. Then $\norm{a^*}=\norm{a}$.
+\end{lemma}
+\begin{proof}
+	For $a=0$ we have $a^*=\conj{0}=0$, hence $\norm{a}=\norm{a^*}$ is clear. Otherwise, we have $\norm{a}>0$ and
+	\begin{align*}
+		\norm{a}^2=\norm{a^*a}\leq \norm{a^*}\norm{a},
+	\end{align*}
+	thus dividing by $\norm{a}$ yields $\norm{a}\leq \norm{a^*}$. Applying the same result to $a^*$, we get
+	\begin{align*}
+		\norm{a}\leq\norm{a^*}\leq\norm{a^{**}}=\norm{a},
+	\end{align*}
+	so $\norm{a}=\norm{a^*}$.
+\end{proof}
+\begin{example}
+	The following Banach algebras with involution are $C^*$-algebras:
+	\begin{itemize}
+		\item $\cC_b(X)$ and $\cC_0(X)$ with (pointwise) complex conjugation.
+		\item For any Hilbert space $\cH$, the algebra $\cB(\cH)$ of bounded operators on $\cH$ with involution induced by $\langle T^*v|w\rangle=\langle v|Tw\rangle$.
+	\end{itemize}
+\end{example}
+\begin{proof}
+	We have already seen that $\cC_b(X)$ and $\cC_0(X)$ are commutative Banach algebras. Pointwise conjugation being an involution is a simple check. Lastly,
+	\begin{align*}
+		\norm{a^*a}=\sup_{x\in X} \abs{a(x)\conj{a(x)}}=\sup_{x\in X}\abs{a(x)}^2=\norm{a}^2,
+	\end{align*}
+	so the given algebra with involution is indeed a $C^*$-algebra.
+	
+	We have also already seen that $\cB(\cH)$ is a Banach algebra. The axioms for an involution are again a straightforward check. Further, we have
+	\begin{align*}
+		\norm{T^*T}&=\sup_{\substack{v\in V\\\norm{v}=1}} \norm{T^*Tv}\\
+			&=\sup_{\substack{v\in V\\\norm{v}=1}} \abs{\langle T^*Tv|T^*Tv\rangle}^{\frac{1}{2}}\\
+			&=\sup_{\substack{v\in V\\\norm{v}=1}} \abs{\langle TTv|TTv\rangle}^{\frac{1}{2}}\\
+			&=\sup_{\substack{v\in V\\\norm{v}=1}} \norm{TTv}\\
+			&=\norm{TT}
+	\end{align*}
+	hence $\cB(\cH)$ is a $C^*$-algebra.
+\end{proof}
 \end{document}
