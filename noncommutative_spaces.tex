@@ -370,4 +370,77 @@
 	\end{align*}
 	hence $\cB(\cH)$ is a $C^*$-algebra.
 \end{proof}
+\begin{remark}
+	Let $A$ be a non-unital $C^*$-algebra. We can consider the unitization $\tilde{A}$ of the underlying Banach algebra: This is a unital Banach algebra with norm $\norm{(a,\lambda)}=\norm{a},\abs{\lambda}$, but with that norm it does not neccessarily admit the structure of a $C^*$-algebra compatible with that of $A$ (\weaktodo{Example for this phenomenon}). Hence we have to provide a different norm on $\tilde{A}$ if we aim to construct a unitization for $C^*$-algebras.
+\end{remark}
+\begin{definition}\label{Def: Unitization of C^*-algebra}
+	Let $A$ be a $C^*$-algebra and consider the embedding
+	\begin{align*}
+		L\colon \tilde{A}&\to \cB(A)\\
+		(a,\lambda)&\mapsto (b\mapsto ab+\lambda b).
+	\end{align*}
+	We will see in Lemma \ref{Lemma: Inclusion of unitization in bounded endomorphisms injective} that $L$ is an injective algebra homomorphism, hence we define the norm and $(-)^*$ on $\tilde{A}\cong L(\tilde{A})\subseteq \cB(A)$ to be the ones inherited from $\cB(A)$. We refer to this $C^*$-algebra as the \textit{unitization} of $A$.
+\end{definition}
+\begin{lemma}\label{Lemma: Inclusion of unitization in bounded endomorphisms injective}
+	Let $A$ be a $C^*$-algebra. The map $L\colon \tilde{A}\to\cB(A)$ from Definition \ref{Def: Unitization of C^*-algebra} is an injective algebra homomorphism. Further, $\tilde{A}\cong L(\tilde A)$ with the norm and $(-)^*$ inherited from $\cB(A)$ forms a unital $C^*$-algebra and $A\subseteq \tilde{A}$ is a $C^*$-subalgebra.
+\end{lemma}
+\weaktodo{Prove at least parts of this}
+\begin{note}
+	The norm on $\tilde{A}$ is $\norm{(a,\lambda)}=\sup_{b\in A}\norm{ab+\lambda b}$, the involution is $(a,\lambda)^*=(a^*,\conj{\lambda})$.
+\end{note}
+\weaktodo{Note on the adjunction}
+\begin{definition}
+	Let $A$ be a $C^*$-algebra and $a\in A$. We say that $a$ is
+	\begin{itemize}
+		\item \textit{self-adjoint} if $a^*=a$,
+		\item \textit{unitary} if $a^*a=aa^*=1$,
+		\item \textit{normal} if $a^*a=aa^*$,
+		\item \textit{positive} if $a=b^*b$ for some $b\in A$.
+	\end{itemize}
+\end{definition}
+\begin{definition}
+	For a (not neccessarily unital) $C^*$-algebra $A$ and $a\in A$, we define the spectral radius of $a$ to be $r(a)\coloneqq r((a,0))$, the spectral radius of $(a,0)\in \tilde{A}$.
+\end{definition}
+\begin{proposition}\label{Lemma: Norm of powers of normal elements}
+	For a $C^*$-algebra $A$, $a\in A$ normal and $n\in \N$, we have $\norm{a^n}=\norm{a}^n$.
+\end{proposition}
+\begin{proof}
+	Using normality and $(aa)^*=a^*a^*$ for the second equation, we have
+	\begin{align*}
+		\norm{a^2}&=\norm{a^2\left(a^2\right)^*}^{\frac{1}{2}}\\
+		&=\norm{(a^*a)(a^*a)^*}^{\frac{1}{2}}\\
+		&=\norm{a^*a}\\
+		&=\norm{a}^2.
+	\end{align*}
+	Inductively, $\norm{a^{2^n}}=\norm{a}^{2^n}$. Further, by submultiplicativity, for any $n\in \N$ we have $\norm{a^n}\leq \norm{a}^n$. But then, letting $k\in \N$ with $2^k>n$, we get
+	\begin{align*}
+		\norm{a}^n\norm{a^{2^k-n}}&\leq \norm{a}^n\norm{a}^{2^k-n}\\
+		&=\norm{a}^{2^k}\\
+		&=\norm{a^{2^k}}\\
+		&\leq \norm{a^n}\norm{a^{2^k-n}}.
+	\end{align*}
+	Now, if $a=0$, the statement to be proven is trivial, otherwise we get
+	\begin{align*}
+		\norm{a}^n\leq \norm{a^n}\leq\norm{a}^n,
+	\end{align*}
+	which yields the desired equality.
+\end{proof}
+\begin{corollary}
+	For a $C^*$-algebra $A$ and $a\in A$ normal, we have $r(a)=\norm{a}$.
+\end{corollary}
+\begin{proof}
+	Let $\alpha=(a,0)\in \tilde{A}$. As $a$ was normal, so is $\alpha$. By Theorem \ref{Thm: Spectral Theorem} and Lemma \ref{Lemma: Norm of powers of normal elements}, we have
+	\begin{align*}
+		r(a)=r(\alpha)=\lim_{n\to\infty}\norm{\alpha^n}^{\frac{1}{n}}=\lim_{n\to\infty}\left(\norm{\alpha}^n\right)^{\frac{1}{n}}=\norm{\alpha}.
+	\end{align*}
+\end{proof}
+\begin{corollary}
+	For a $C*$-algebra $A$ and $a\in A$, we have $\norm{a}=r(a^*a)^{\frac{1}{2}}$. In particular, the norm of a $C^*$-algebra is already uniquely determined by the $\C$-algebra structure.
+\end{corollary}
+\begin{proof}
+	$a^*a$ is self-adjoint, hence normal, so we get
+	\begin{align*}
+		\norm{a}=\norm{a^*a}^{\frac{1}{2}}=r(a^*a)^{\frac{1}{2}}.
+	\end{align*}
+\end{proof}
 \end{document}
