@@ -282,7 +282,7 @@
 	\end{align*}
 	so $\Gamma(a)\in \cC_0(\hat{A})$.
 \end{remark}
-\begin{theorem}
+\begin{theorem}\label{Thm: Gelfand transform is norm-decreasing algebra homomorphism}
 	$\Gamma$ is a norm-decreasing algebra homomorphism and $\Gamma(A)$ separates points in $\hat{A}$.
 \end{theorem}
 \begin{proof}
@@ -305,9 +305,16 @@
 	If $A$ is unital and $a\in A$, we have $\sp(a)=\Im(\Gamma(a))$. If $A$ is not unital, $\widetilde{\sp}(a)=\Im(\Gamma(a))\cup\{0\}$, where $\widetilde{\sp}(a)\coloneqq \sp{((a,0))}$ in $\tilde{A}$.
 \end{proposition}
 \begin{proof}
+	Assume first that $A$ is unital. We start by showing $\Im(\Gamma(a))\subseteq \sp(a)$. Let $\chi\in\hat{A}$. Then
+	\begin{align*}
+		\chi(\chi(a)\cdot 1-a)=\chi(a)\chi(1)-\chi(a)=0\not\in\C^{\times},
+	\end{align*}
+	so $\chi(a)\cdot 1-a$ is not invertible and hence $\Gamma(a)(\chi)=\chi(a)\in \sp(a)$.
+	
+	For the opposite inclusion, let $\lambda\in \sp(a)$. We aim to construct a character $\chi_{\lambda}:A\to\C$ that sends $a$ to $\lambda$.
 	\todo{Think about this}
 \end{proof}
-\begin{corollary}
+\begin{corollary}\label{Cor: Norm of Gelfand transform is spectral radius}
 	For $A$ unital and $a\in A$ we have $\norm{\Gamma(a)}=r(a)$. In particular, $\ker \Gamma=\{a\in A|r(a)=0\}$.
 \end{corollary}
 \subsection{$C^*$-algebras}
@@ -434,13 +441,68 @@
 		r(a)=r(\alpha)=\lim_{n\to\infty}\norm{\alpha^n}^{\frac{1}{n}}=\lim_{n\to\infty}\left(\norm{\alpha}^n\right)^{\frac{1}{n}}=\norm{\alpha}.
 	\end{align*}
 \end{proof}
-\begin{corollary}
-	For a $C*$-algebra $A$ and $a\in A$, we have $\norm{a}=r(a^*a)^{\frac{1}{2}}$. In particular, the norm of a $C^*$-algebra is already uniquely determined by the $\C$-algebra structure.
+\begin{corollary}\label{Cor: Spectral radius of normal elements}
+	For a $C^*$-algebra $A$ and $a\in A$, we have $\norm{a}=r(a^*a)^{\frac{1}{2}}$. In particular, the norm of a $C^*$-algebra is already uniquely determined by the $\C$-algebra structure.
 \end{corollary}
 \begin{proof}
-	$a^*a$ is self-adjoint, hence normal, so we get
+	$a^*a$ is self-adjoint, hence normal, so by Corollary \ref{Cor: Spectral radius of normal elements} we get
 	\begin{align*}
 		\norm{a}=\norm{a^*a}^{\frac{1}{2}}=r(a^*a)^{\frac{1}{2}}.
 	\end{align*}
+\end{proof}
+\begin{corollary}\label{Cor: Gelfand transform injective}
+	If $A$ is a commutative $C^*$-algebra, the Gelfand transform $\Gamma$ is in isometry.
+\end{corollary}
+\begin{proof}
+	By Corollary \ref{Cor: Norm of Gelfand transform is spectral radius} and Corollary \ref{Cor: Spectral radius of normal elements}, we have $\norm{\Gamma(a)}=r(a)=\norm{a}$ for every normal $a\in A$. But as $A$ is commutative, every element is normal.
+\end{proof}
+\begin{proposition}\label{Prop: Spectrum of self-adjoint and unitary elements}
+	Let $A$ be a unital $C^*$-algebra and $a\in A$. If $a$ is self-adjoint, $\sp(a)\subseteq\R$. If $a$ is unitary, $\sp(a)\subseteq U(1)=S^1$.
+\end{proposition}
+\todo{Proof}
+\begin{lemma}\label{Lemma: Real and imaginary part in C^*-algebra}
+	For a $C^*$-algebra $A$ and $a\in A$, we can find self-adjoint elements $b,c\in A$ with $a=b+ic$.
+\end{lemma}
+\begin{proof}
+	Let 
+	\begin{align*}
+		b\coloneqq \frac{a+a^*}{2}
+	\end{align*}
+	and
+	\begin{align*}
+		c\coloneqq \frac{i(a^*-a)}{2}.
+	\end{align*}
+	Then $b^*=b$, $c^*=c$ and $b+ic=a$.
+\end{proof}
+
+We use the following input from functional analysis:
+\begin{theorem}[Stone-Weierstrass]\label{Thm: Stone-Weierstrass}
+	If $X$ is a locally compact Hausdorff space and $B\subseteq\cC_0(X)$ a nowhere vanishing, self-adjoint algebra which separates points, then $B\subseteq\cC_0(X)$ is dense.
+\end{theorem}
+Using this, we can show:
+\begin{theorem}[Gelfand-Naimark I]
+	Let $A$ be a commutative $C^*$-algebra. Then the Gelfand transform $\Gamma$ is an isomorphism of $C^*$-algebras.
+\end{theorem}
+\begin{proof}
+	We have already seen that $\Gamma$ is an algebra homomorphism and $\Gamma(a)$ separates points in $\hat{A}$ for all $a\in A$ (Theorem \ref{Thm: Gelfand transform is norm-decreasing algebra homomorphism}). Further, $\Gamma$ is a morphism of $C^*$-algebras: Let $\chi\in \hat{A}$ and $a\in A$. We write $a=b+ic$ with $b,c\in A$ self-adjoint (Lemma \ref{Lemma: Real and imaginary part in C^*-algebra}). Note first that $\chi(b)\in\sp(b)\subseteq \R$ by Proposition \ref{Prop: Spectrum of self-adjoint and unitary elements}, and the same holds for $\chi(c)$. But then
+	\begin{align*}
+		\chi(a^*)&=\chi(b^*-ic^*)\\
+		&=\chi(b-ic)\\
+		&=\chi(b)-i\chi(c)\\
+		&=\conj{\chi(b)+i\chi(c)}\\
+		&=\conj{\chi(b+ic)}\\
+		&=\conj{\chi(a)},
+	\end{align*}
+	hence
+	\begin{align*}
+		\Gamma(a^*)=(\chi\mapsto\chi(a^*))=(\chi\mapsto \conj{\chi(a)})=\Gamma(a)^*.
+	\end{align*}
+	We have already seen that $\Gamma$ is an isometry (Corollary \ref{Cor: Gelfand transform injective}), hence it is injective and, as $A$ is complete, the image of $\Gamma$ is closed, so it suffices to show that this image is dense. For that, we apply Theorem \ref{Thm: Stone-Weierstrass}:
+	\begin{itemize}
+		\item $\Gamma(A)$ is nowhere vanishing as for each $\chi\in \hat{A}$ we have $\chi\neq 0$, so there is some $a\in A$ with $\Gamma(a)(\chi)=\chi(a)\neq 0$.
+		\item $\Gamma(A)$ is self-adjoint, as $\Gamma(a)^*=\Gamma(a^*)$.
+		\item $\Gamma(A)$ seperates points by Theorem \ref{Thm: Gelfand transform is norm-decreasing algebra homomorphism}.
+	\end{itemize}
+	So the conditions for Stone-Weierstrass are met and $\Gamma(A)\subseteq \cC_0(\hat{A})$ is dense, which was left to show.
 \end{proof}
 \end{document}
