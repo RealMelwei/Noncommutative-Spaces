@@ -30,6 +30,8 @@
 \newcommand{\conj}[1]{\overline{#1}}
 \DeclareMathOperator{\oplow}{op}
 \renewcommand{\op}{^{\oplow}}
+\newcommand{\into}{\hookrightarrow}
+\DeclareSimpleMathOperator{comm}
 \begin{document}
 	\maketitle
 	
@@ -474,7 +476,21 @@
 	\end{align*}
 	Then $b^*=b$, $c^*=c$ and $b+ic=a$.
 \end{proof}
-
+\begin{lemma}\label{Lemma: Characters are *-homomorphisms}
+	For a $C^*$-algebra $A$, each character $\chi:A\to \C$ is already a $C^*$-algebra homomorphism.
+\end{lemma}
+\begin{proof}
+	Let $\chi\in \hat{A}$ and $a\in A$. We write $a=b+ic$ with $b,c\in A$ self-adjoint (Lemma \ref{Lemma: Real and imaginary part in C^*-algebra}). Note first that $\chi(b)\in\sp(b)\subseteq \R$ by Proposition \ref{Prop: Spectrum of self-adjoint and unitary elements}, and the same holds for $\chi(c)$. But then
+	\begin{align*}
+		\chi(a^*)&=\chi(b^*-ic^*)\\
+		&=\chi(b-ic)\\
+		&=\chi(b)-i\chi(c)\\
+		&=\conj{\chi(b)+i\chi(c)}\\
+		&=\conj{\chi(b+ic)}\\
+		&=\conj{\chi(a)}
+	\end{align*}
+	as desired.
+\end{proof}
 We use the following input from functional analysis:
 \begin{theorem}[Stone-Weierstrass]\label{Thm: Stone-Weierstrass}
 	If $X$ is a locally compact Hausdorff space and $B\subseteq\cC_0(X)$ a nowhere vanishing, self-adjoint algebra which separates points, then $B\subseteq\cC_0(X)$ is dense.
@@ -484,20 +500,12 @@ Using this, we can show:
 	Let $A$ be a commutative $C^*$-algebra. Then the Gelfand transform $\Gamma$ is an isomorphism of $C^*$-algebras.
 \end{theorem}
 \begin{proof}
-	We have already seen that $\Gamma$ is an algebra homomorphism and $\Gamma(a)$ separates points in $\hat{A}$ for all $a\in A$ (Theorem \ref{Thm: Gelfand transform is norm-decreasing algebra homomorphism}). Further, $\Gamma$ is a morphism of $C^*$-algebras: Let $\chi\in \hat{A}$ and $a\in A$. We write $a=b+ic$ with $b,c\in A$ self-adjoint (Lemma \ref{Lemma: Real and imaginary part in C^*-algebra}). Note first that $\chi(b)\in\sp(b)\subseteq \R$ by Proposition \ref{Prop: Spectrum of self-adjoint and unitary elements}, and the same holds for $\chi(c)$. But then
-	\begin{align*}
-		\chi(a^*)&=\chi(b^*-ic^*)\\
-		&=\chi(b-ic)\\
-		&=\chi(b)-i\chi(c)\\
-		&=\conj{\chi(b)+i\chi(c)}\\
-		&=\conj{\chi(b+ic)}\\
-		&=\conj{\chi(a)},
-	\end{align*}
-	hence
+	We have already seen that $\Gamma$ is an algebra homomorphism and $\Gamma(a)$ separates points in $\hat{A}$ for all $a\in A$ (Theorem \ref{Thm: Gelfand transform is norm-decreasing algebra homomorphism}). Further, $\Gamma$ is a morphism of $C^*$-algebras: 
+	Using Lemma \ref{Lemma: Characters are *-homomorphisms}, we get
 	\begin{align*}
 		\Gamma(a^*)=(\chi\mapsto\chi(a^*))=(\chi\mapsto \conj{\chi(a)})=\Gamma(a)^*.
 	\end{align*}
-	We have already seen that $\Gamma$ is an isometry (Corollary \ref{Cor: Gelfand transform injective}), hence it is injective and, as $A$ is complete, the image of $\Gamma$ is closed, so it suffices to show that this image is dense. For that, we apply Theorem \ref{Thm: Stone-Weierstrass}:
+	We have further already seen that $\Gamma$ is an isometry (Corollary \ref{Cor: Gelfand transform injective}), hence it is injective and, as $A$ is complete, the image of $\Gamma$ is closed, so it suffices to show that this image is dense. For that, we apply Theorem \ref{Thm: Stone-Weierstrass}:
 	\begin{itemize}
 		\item $\Gamma(A)$ is nowhere vanishing as for each $\chi\in \hat{A}$ we have $\chi\neq 0$, so there is some $a\in A$ with $\Gamma(a)(\chi)=\chi(a)\neq 0$.
 		\item $\Gamma(A)$ is self-adjoint, as $\Gamma(a)^*=\Gamma(a^*)$.
@@ -505,5 +513,47 @@ Using this, we can show:
 	\end{itemize}
 	So the conditions for Stone-Weierstrass are met and $\Gamma(A)\subseteq \cC_0(\hat{A})$ is dense, which was left to show.
 \end{proof}
-
+\begin{proposition}\label{Prop: Spectrum of algebra of continuous functions on X is X}
+	Let $X$ be a compact Hausdorff space. Then the map
+	\begin{align*}
+		\eps: X&\to \widehat{\cC_0(X)}\\
+		x&\mapsto (\phi\mapsto \phi(x))
+	\end{align*}
+	is an isomorphism.
+\end{proposition}
+\begin{proof}
+	\leavevmode
+	\begin{itemize}
+		\item First, note that $\eps$ is well-defined: As $X$ is compact, $\const_1\in \cC_0(X)$ and $\eps(x)(\const_1)=\const_1(x)=1$, hence $\eps(x)$ is nowhere vanishing. Further, it is easy to see that $\eps(x)$ is an algebra homomorphism, hence a character.
+		\item Continuity of $\eps$ turns out to be rather subtle: It is easy to show sequential continuity, but that does not neccessarily imply continuity. Instead, one can show that net continuity implies continuity, and that a net $(T_\lambda)_{\lambda\in I}$ in the weak-$*$ topology converges if and only if it converges pointwise. Then, for a net $(x_\lambda)_{\lambda\in I}$ in $X$, as every $\phi\in \cC_0(X)$ is continuous, we have
+		\begin{align*}
+			(\eps(x_\lambda)(\phi))_{\lambda\in I}=(\phi(x_\lambda))_{\lambda}\to \phi(x)=\eps(x)(\phi)
+		\end{align*}
+		Hence, $\eps(x_\lambda)$ is a pointwise converging net, thus by the aforementioned theorem already a weak-$*$ convergent net. So $\eps$ is continuous.
+		\item $\eps$ is injective: Let $x\neq y\in X$ with $\eps(x)=\eps(y)$. As $\{x\}$ and $\{y\}$ are closed, by Urysohns lemma there is some continuous $\phi:X\to [0,1]\into \C$ with $\phi(x)\neq \phi(y)$, hence $\eps(x)(\phi)\neq \eps(y)(\phi)$.
+		\item $\eps$ is surjective: Let $\chi:\cC_0(X)\to \C$ be a character. We aim to apply Stone-Weierstrass to $\ker\chi$. For $\phi\in \cC_0(X)$, we have 
+		\begin{align*}
+			\chi(\chi(\phi)\cdot 1-\phi)=0,
+		\end{align*}
+		so $\chi(\phi)\cdot 1-\phi\in \ker \chi$. Now, if $x\neq y\in X$, there is some $\phi\in \cC_0(X)$ with $\phi(x)\neq \phi(y)$, hence
+		\begin{align*}
+			\phi(x)-\chi(\phi)\neq \phi(y)-\chi(\phi).
+		\end{align*}
+		Thus, $\ker \chi$ separates points. Further, $\ker \chi$ is the kernel of a $C^*$-algebra homomorphism, as we have seen in Lemma \ref{Lemma: Characters are *-homomorphisms}, hence a self-adjoint algebra. Therefore, if $\ker \chi$ would separate points, it would be dense in $\widehat{\cC_0(X)}$, but it is also closed, hence that would already imply $\ker \chi=\widehat{\cC_0(X)}$, a contradiction. Thus, $\ker\chi$ does not separate points, so there is some $x\in X$ with $\chi(\phi)-\phi(x)=0$ for all $\phi\in\cC_0(X)$. But this just means $\chi(\phi)=\phi(x)=\eps(x)(\phi)$, so $\chi=\eps(x)$.
+	\end{itemize}
+	To conclude, note that this yielded a continuous bijection $X\to\widehat{\cC_0(X)}$, where $X$ is compact Hausdorff, so this is already a homeomorphism.
+\end{proof}
+\begin{proposition}
+	The map $\eps: X\to \widehat{\cC_0(X)}$ from Proposition \ref{Prop: Spectrum of algebra of continuous functions on X is X} is already an equivalence if $X$ is locally compact Hausdorff.
+\end{proposition}
+\begin{proof}[Proof Sketch]
+	Let $\tilde{X}=X\cup \{\infty\}$ denote the one-point compactification. Then, a map $\phi\in \cC_0(\tilde{X})$ is of the form $\const_{\phi(\infty)}+\phi'$, where $\phi'(\infty)=0$ and $\phi'\mid_X\in \cC_0(X)$. This yields
+	\begin{align*}
+		\cC_0(\tilde{X})\cong \cC_0(X)\oplus\C
+	\end{align*}
+	and one can check that $\cC_0(\tilde{X})\cong \widetilde{\cC_0(X)}$, the unitization of the $C^*$-algebra $\cC_0(X)$. Further, for any $C^*$-algebra one can check $\hat{\tilde{A}}=\hat{A}\cup\{\chi_\infty\}$ , where $\chi_\infty:\tilde{A}\cong A\oplus\C\to \C$ is the projection onto the second component. But then, applying Proposition \ref{Prop: Spectrum of algebra of continuous functions on X is X} to $\tilde{X}$ finishes the proof.
+\end{proof}
+\begin{remark}
+	One can check that the assignments $\cC_0:\Top^{lc,H}\to C^*\Alg^{\comm}$ and $\widehat{(-)}:C^*\Alg^{\comm}\to \Top^{lc,H}$ are contravariant functors, where $\Top^{lc,H}$ is the category of locally compact Hausdorff spaces and $C^*\Alg^{\comm}$ that of commutative $C^*$-algebras. Further, the Gelfand transform and $\eps$ from Proposition \ref{Prop: Spectrum of algebra of continuous functions on X is X} are natural, hence $\cC_0$ and $\widehat{(-)}$ form a contravariant equivalence between locally compact Hausdorff spaces and commutative $C^*$-algebras. Under this equivalence, one-point compactification corresponds to unitization.
+\end{remark}
 \end{document}
